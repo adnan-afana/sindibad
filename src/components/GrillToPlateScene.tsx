@@ -8,7 +8,7 @@ import {
   baseTransform, dishes, food, foodTransform, grillItems, grillLayout, landedStyle, moversFor,
   pieceStyle, plateBase, scenePieces, slotStyle, type SceneModel,
 } from '../lib/scene-model'
-import { assets, hero, imageSize, motion, platesSection } from '../data/scene'
+import { assets, hero, imageSize, moreDishes, motion, platesSection } from '../data/scene'
 import type { DishId, Mover, Piece, Window } from '../data/types'
 import { FireEffects } from './FireEffects'
 import { InfoPills } from './InfoPills'
@@ -57,34 +57,43 @@ function Hero() {
   )
 }
 
-function PlateCard({ model, dish }: { model: SceneModel; dish: (typeof dishes)[number] }) {
-  const plate = food.plates[dish.id]
+type CardDish = { id: string; plate: DishId; name: string; price?: string; description?: string }
+
+/**
+ * A dish card. `live` cards are the landing targets of the grill scene (anchors + animated
+ * layers); static cards (the extra menu rows) simply show the plated dish.
+ */
+export function PlateCard({ model, dish, live = true }: { model: SceneModel; dish: CardDish; live?: boolean }) {
+  const plate = food.plates[dish.plate]
+  const a = (name: string) => (live ? { [`data-${name}`]: dish.plate } : {})
   const w = 1100
   const h = Math.round(w / plate.aspect)
   return (
     <article className="plate-card flex min-w-0 flex-col items-center text-center" aria-labelledby={`dish-${dish.id}`}>
-      <div className="plate-card__plate" data-plate={dish.id} style={{ aspectRatio: `${plate.aspect}` }}>
-        <div className="absolute inset-0 will-change-transform" data-plate-visual={dish.id}>
-          <img className="absolute inset-0 size-full object-contain" src={plateBase(model, dish.id)} alt="" width={w} height={h} draggable={false} decoding="async"
-            style={{ transform: baseTransform(model, dish.id) }} />
-          <div className="absolute inset-0 opacity-0" data-landed={dish.id}>
-            {moversFor(dish.id).map(([id, mover]) =>
+      <div className="plate-card__plate" {...a('plate')} style={{ aspectRatio: `${plate.aspect}` }}>
+        <div className="plate-card__hover">
+        <div className={`absolute inset-0 ${live ? 'will-change-transform' : ''}`} {...a('plate-visual')}>
+          <img className="absolute inset-0 size-full object-contain" src={plateBase(model, dish.plate)} alt="" width={w} height={h} draggable={false} decoding="async"
+            loading={live ? 'eager' : 'lazy'} style={{ transform: baseTransform(model, dish.plate) }} />
+          <div className={`absolute inset-0 ${live ? 'opacity-0' : ''}`} {...a('landed')}>
+            {moversFor(dish.plate).map(([id, mover]) =>
               scenePieces(model, mover).map((p, i) => (
                 <div key={`${id}-${i}`} className="plate-card__piece" style={landedStyle(mover, p)}>
-                  <FoodImage model={model} mover={mover} piece={p} eager />
+                  <FoodImage model={model} mover={mover} piece={p} eager={live} />
                 </div>
               )),
             )}
           </div>
-          <div className="steam" data-steam={dish.id} aria-hidden="true"><span /><span /><span /><span /></div>
+          <div className={`steam ${live ? '' : 'steam--on'}`} {...a('steam')} aria-hidden="true"><span /><span /><span /><span /></div>
+        </div>
+        {dish.price && <span className="price-pill" aria-hidden="true">${dish.price}</span>}
         </div>
         {/* invisible end anchors: where each travelling piece lands, placed with % */}
-        {moversFor(dish.id).map(([id, mover]) =>
+        {live && moversFor(dish.plate).map(([id, mover]) =>
           scenePieces(model, mover).map((p, i) => (
             <span key={`${id}-${i}`} className="anchor" data-end={`${id}:${i}`} style={{ left: `${p.final.x}%`, top: `${p.final.y}%` }} />
           )),
         )}
-        {dish.price && <span className="price-pill" aria-hidden="true">${dish.price}</span>}
         <span className="visually-hidden">{dish.name}, plated</span>
       </div>
       <div className="plate-card__body mt-[clamp(0.75rem,2vh,1.5rem)] flex flex-col items-center gap-[0.6rem]">
@@ -434,8 +443,14 @@ export function GrillToPlateScene({ model }: { model: SceneModel }) {
           <section className="plates" id="menu" aria-labelledby="plates-title">
             <h2 id="plates-title" className="visually-hidden">{platesSection.title}</h2>
             <div className="plates__grid">
-              {dishes.map((d) => <PlateCard key={d.id} model={model} dish={d} />)}
+              {dishes.map((d) => <PlateCard key={d.id} model={model} dish={{ ...d, plate: d.id }} />)}
             </div>
+            {/* phones: the extra row fits in the same screen as the first one */}
+            {moreDishes.length > 0 && (
+              <div className="plates__grid plates__grid--more-inline">
+                {moreDishes.map((d) => <PlateCard key={d.id} model={model} dish={{ ...d, id: `${d.id}-m` }} live={false} />)}
+              </div>
+            )}
           </section>
         </div>
       </div>
