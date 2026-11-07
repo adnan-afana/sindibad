@@ -137,6 +137,7 @@ export function SiteFooter() {
       <div className="site-footer__bar">
         <span>© {new Date().getFullYear()} Sindibad BBQ &amp; Grill</span>
         <span>{halal.title}</span>
+        <a className="site-footer__edit" href="#owner">Edit images</a>
       </div>
     </footer>
   )

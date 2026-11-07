@@ -3,6 +3,7 @@ import type { Adjust, DishId } from '../data/types'
 import {
   adjustTransform, baseKey, emptyOwnerState, exportOwnerState, foodKey, importOwnerState, loadOwnerState,
   noAdjust, referenceKey, saveOwnerState, type OwnerState,
+  loadPublished, publishBundle, type Published,
 } from '../lib/owner-store'
 import { dishes, food, grillLayout, landedStyle, moversFor, pieceStyle, scenePieces, type SceneModel } from '../lib/scene-model'
 
@@ -21,7 +22,13 @@ export default function OwnerEditor() {
   const [message, setMessage] = useState('')
   const [exported, setExported] = useState('')
 
-  useEffect(() => { loadOwnerState().then(setState) }, [])
+  const [published, setPublished] = useState<Published>({ adjust: {}, images: {} })
+  useEffect(() => {
+    loadPublished().then((pub) => {
+      setPublished(pub)
+      loadOwnerState().then((st) => setState({ ...st, adjust: { ...pub.adjust, ...st.adjust } }))
+    })
+  }, [])
 
   const urls = useMemo(
     () => Object.fromEntries(Object.entries(state.images).map(([k, b]) => [k, URL.createObjectURL(b)])),
@@ -29,7 +36,8 @@ export default function OwnerEditor() {
   )
   useEffect(() => () => Object.values(urls).forEach((u) => URL.revokeObjectURL(u)), [urls])
 
-  const model: SceneModel = { local: { images: urls, adjust: state.adjust } }
+  const allUrls = { ...published.images, ...urls }
+  const model: SceneModel = { local: { images: allUrls, adjust: state.adjust } }
   const plate = food.plates[dish]
   const dishInfo = dishes.find((d) => d.id === dish)
   const first = moversFor(dish)[0]
@@ -69,6 +77,18 @@ export default function OwnerEditor() {
       setMessage('Copy the configuration from the box below.')
     }
   }
+  const doPublish = async () => {
+    try {
+      const zip = await publishBundle(state, published)
+      const a = document.createElement('a')
+      a.href = URL.createObjectURL(zip)
+      a.download = 'sindibad-images.zip'
+      a.click()
+      setMessage('Downloaded sindibad-images.zip. Unzip it and upload everything inside to the folder public/assets/owner/ in the GitHub repo (Add file → Upload files). The site updates for everyone after that.')
+    } catch {
+      setMessage('Could not build the download in this browser. Try Chrome on a computer.')
+    }
+  }
   const doImport = async (file?: File) => {
     if (!file) return
     try {
@@ -96,7 +116,7 @@ export default function OwnerEditor() {
         <a className="owner__back" href="#">Back to the site</a>
       </header>
       <p className="owner__intro">
-        Replace the food and dish images and fine-tune their position. Changes are stored in this browser (IndexedDB) and can be shown on the site on this device only. They do not change the published website: to publish, export the configuration and send it, with the image files, to whoever updates the site. Clearing site data or using a private window loses unsaved edits.
+        1. Pick a dish, press “Replace image” and choose your photo (the food alone as a transparent PNG for the grill, the plate photo for the dish). 2. Line it up with the sliders while watching the preview. 3. Tick “Show these edits on the site in this browser” to check it on the real page. 4. Press “Download for the website” and upload the files inside the ZIP to public/assets/owner/ on GitHub — then everyone sees your images. Your photos are used exactly as you upload them, never re-processed.
       </p>
       <nav className="owner__tabs" aria-label="Dish">
         {dishes.map((d) => (
@@ -108,14 +128,15 @@ export default function OwnerEditor() {
           {slots.map((slot) => {
             const adj = state.adjust[slot.key] ?? noAdjust
             const replaced = !!urls[slot.key]
+            const live = !replaced && !!published.images[slot.key]
             return (
               <section key={slot.key} className="owner__slot" aria-labelledby={`slot-${slot.key}`}>
                 <div className="owner__slot-head">
-                  <img className="owner__thumb" src={urls[slot.key] ?? slot.original} alt="" loading="lazy" decoding="async" />
+                  <img className="owner__thumb" src={allUrls[slot.key] ?? slot.original} alt="" loading="lazy" decoding="async" />
                   <div>
                     <h2 id={`slot-${slot.key}`}>{slot.label}</h2>
                     <p>{slot.hint}</p>
-                    <p className="owner__status">{replaced ? 'Replaced (this browser only)' : 'Original image'}</p>
+                    <p className="owner__status">{replaced ? 'New image — not published yet' : live ? 'Your published image' : 'Original image'}</p>
                   </div>
                 </div>
                 <div className="owner__actions">
@@ -142,7 +163,7 @@ export default function OwnerEditor() {
           <h2>Preview</h2>
           {plate && (
             <div className="owner__plate" style={{ aspectRatio: `${plate.aspect}` }}>
-              <img src={urls[baseKey(dish)] ?? plate.base} alt="" style={{ transform: adjustTransform(state.adjust[baseKey(dish)]) }} />
+              <img src={allUrls[baseKey(dish)] ?? plate.base} alt="" style={{ transform: adjustTransform(state.adjust[baseKey(dish)]) }} />
               <div className="owner__landed">
                 {moversFor(dish).map(([id, mover]) =>
                   scenePieces(model, mover).map((p, i) => (
@@ -186,7 +207,8 @@ export default function OwnerEditor() {
           Show these edits on the site in this browser
         </label>
         <div className="owner__actions">
-          <button type="button" className="owner__button" onClick={doExport}>Export configuration</button>
+          <button type="button" className="owner__button" onClick={doPublish}>Download for the website</button>
+          <button type="button" className="owner__button owner__button--quiet" onClick={doExport}>Export configuration</button>
           <label className="owner__button owner__button--quiet">
             Import configuration
             <input id="import" type="file" accept="application/json,.json" onChange={(e) => doImport(e.target.files?.[0])} />
