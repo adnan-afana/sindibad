@@ -158,14 +158,14 @@ h3 {
   width: calc(var(--tile) * 2%);
   mix-blend-mode: multiply;
   background: linear-gradient(90deg, #fff 0%, #262626 18%, #fff 33%, #404040 52%, #fff 68%, #1a1a1a 84%, #fff 100%) 0 0 / 50% 100% repeat-x;
-  animation: 7s linear infinite flame-sweep-drift;
+  animation: 4.375s linear infinite flame-sweep;
   will-change: transform;
 }
 .grill-stage__flames--lick .flame-sweep {
-  animation: 4.6s linear infinite reverse flame-sweep-lick;
+  animation: 3.98s linear infinite reverse flame-sweep;
 }
 .grill-stage__flames--dance .flame-sweep {
-  animation: 3.1s linear infinite flame-sweep-dance;
+  animation: 4.17s linear infinite flame-sweep;
 }
 .grill-stage__flames--lick,
 .grill-stage__flames--dance {
@@ -179,21 +179,13 @@ h3 {
 }
 .grill-stage__flames--dance {
   opacity: 0;
-  animation: 0.95s ease-in-out infinite flame-dance;
+  animation: 0.95s ease-in-out infinite alternate flame-dance;
   --tile: 140;
 }
-/* translateX end = (1 − tile) × 2.6 viewport-widths, as a % of the 2-tile sweep */
-@keyframes flame-sweep-drift {
+/* The sweep is two identical tiles wide and moves exactly one tile per loop, so the loop is seamless. */
+@keyframes flame-sweep {
   from { transform: translateX(0); }
-  to { transform: translateX(-80%); }
-}
-@keyframes flame-sweep-lick {
-  from { transform: translateX(0); }
-  to { transform: translateX(-57.7778%); }
-}
-@keyframes flame-sweep-dance {
-  from { transform: translateX(0); }
-  to { transform: translateX(-37.142857%); }
+  to { transform: translateX(-50%); }
 }
 @keyframes flame-flicker {
   0% {
@@ -477,58 +469,62 @@ h3 {
   overflow: hidden;
   isolation: isolate;
 }
-/* Hover: small flames rise along the bottom of the button (transform/opacity only). */
+/* Hover: real flames rise from the bottom of the button (texture drifts sideways + flickers;
+   transform/opacity only). The texture is two mirrored halves, so the drift loops seamlessly. */
+.order-button > * ,
+.order-button {
+  text-shadow: 0 1px 6px rgba(27, 25, 22, 0.55);
+}
 .order-button::before,
 .order-button::after {
   content: "";
   position: absolute;
   z-index: -1;
-  left: -20%;
-  width: 140%;
+  left: 0;
   bottom: 0;
-  height: 75%;
+  width: 200%;
   pointer-events: none;
+  background: url("./assets/btn-fire.webp") 0 100% / 50% 100% repeat-x;
+  mix-blend-mode: screen;
   transform-origin: 50% 100%;
-  transform: translateY(105%) scaleY(0.6);
   opacity: 0;
-  transition: transform 0.35s cubic-bezier(0.33, 1, 0.68, 1), opacity 0.25s;
-  background:
-    radial-gradient(ellipse 7% 70% at 8% 100%, #ffd98a 0%, var(--sb-ember) 45%, transparent 72%),
-    radial-gradient(ellipse 9% 95% at 22% 100%, #ffe7a8 0%, var(--sb-ember) 40%, transparent 70%),
-    radial-gradient(ellipse 6% 60% at 36% 100%, #ffd98a 0%, var(--sb-ember) 45%, transparent 72%),
-    radial-gradient(ellipse 10% 100% at 52% 100%, #ffe7a8 0%, var(--sb-ember) 40%, transparent 70%),
-    radial-gradient(ellipse 7% 70% at 67% 100%, #ffd98a 0%, var(--sb-ember) 45%, transparent 72%),
-    radial-gradient(ellipse 9% 90% at 82% 100%, #ffe7a8 0%, var(--sb-ember) 40%, transparent 70%),
-    radial-gradient(ellipse 6% 55% at 95% 100%, #ffd98a 0%, var(--sb-ember) 45%, transparent 72%);
+  transform: translate3d(0, 60%, 0);
+  transition: opacity 0.3s, transform 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.order-button::before {
+  height: 115%;
 }
 .order-button::after {
-  height: 55%;
-  left: -30%;
-  filter: blur(1px);
+  height: 85%;
+  left: -35%;
+  transform: translate3d(0, 60%, 0) scaleX(-1);
 }
 .order-button:hover {
   background: var(--order-hover);
 }
 .order-button:hover::before,
 .order-button:focus-visible::before {
-  opacity: 0.9;
-  transform: translateY(0) scaleY(1);
-  animation: btn-flame 0.9s ease-in-out infinite alternate;
+  opacity: 0.95;
+  transform: translate3d(0, 0, 0);
+  animation: btn-fire-drift 3.2s linear infinite, btn-fire-flicker 0.6s ease-in-out infinite alternate;
 }
 .order-button:hover::after,
 .order-button:focus-visible::after {
-  opacity: 0.7;
-  transform: translateY(0) scaleY(1);
-  animation: btn-flame-2 0.7s ease-in-out infinite alternate;
+  opacity: 0.6;
+  transform: translate3d(0, 0, 0);
+  animation: btn-fire-drift-2 2.3s linear infinite;
 }
-@keyframes btn-flame {
-  0% { transform: translateX(0) scaleY(0.85); }
-  50% { transform: translateX(-3%) scaleY(1.1); }
-  100% { transform: translateX(-6%) scaleY(0.9); }
+@keyframes btn-fire-drift {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
 }
-@keyframes btn-flame-2 {
-  0% { transform: translateX(-4%) scaleY(1.05); }
-  100% { transform: translateX(4%) scaleY(0.8); }
+@keyframes btn-fire-drift-2 {
+  from { transform: translate3d(-50%, 6%, 0) scaleY(0.9); }
+  to { transform: translate3d(0, 6%, 0) scaleY(0.9); }
+}
+@keyframes btn-fire-flicker {
+  from { opacity: 0.85; }
+  to { opacity: 1; }
 }
 .order-button:active {
   background: var(--order-active);
@@ -586,11 +582,11 @@ h3 {
   display: inline-flex;
   align-items: center;
   gap: 0.5em;
-  padding: 0.5em 0.9em;
+  padding: 0.42em 0.75em;
   border-radius: 999px;
   font-family: var(--condensed);
   font-weight: 500;
-  font-size: clamp(13px, 1.05vw, 17px);
+  font-size: clamp(11px, 0.78vw, 13px);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   line-height: 1;
@@ -783,7 +779,7 @@ h3 {
     bottom: 7%;
   }
   .pill {
-    font-size: 12px;
+    font-size: 10.5px;
   }
 }
 .journey[data-mode="cinematic"] {
@@ -938,59 +934,34 @@ h3 {
 .steam {
   opacity: 0;
   pointer-events: none;
-  height: 70%;
   position: absolute;
-  bottom: 45%;
-  left: 30%;
-  right: 30%;
+  left: 25%;
+  right: 25%;
+  top: -18%;
+  height: 55%;
 }
+/* Very light wisps of steam above the food (transform/opacity only). */
 .steam span {
-  aspect-ratio: 1/2.4;
-  filter: blur(10px);
-  opacity: 0;
-  background: radial-gradient(
-    closest-side,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
-  border-radius: 50%;
-  width: 34%;
-  animation: 4.8s ease-in infinite steam-rise;
   position: absolute;
   bottom: 0;
+  width: 18%;
+  aspect-ratio: 1 / 3.2;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05) 60%, transparent);
+  filter: blur(4px);
+  opacity: 0;
+  animation: steam-rise 6.5s ease-in-out infinite;
+  will-change: transform, opacity;
 }
-.steam span:first-child {
-  animation-delay: 0s;
-  left: 6%;
-}
-.steam span:nth-child(2) {
-  animation-delay: 1.2s;
-  left: 34%;
-}
-.steam span:nth-child(3) {
-  animation-delay: 2.4s;
-  left: 60%;
-}
-.steam span:nth-child(4) {
-  animation-delay: 3.6s;
-  left: 22%;
-}
+.steam span:nth-child(1) { left: 18%; animation-delay: 0s; }
+.steam span:nth-child(2) { left: 44%; animation-delay: 1.6s; }
+.steam span:nth-child(3) { left: 66%; animation-delay: 3.2s; }
+.steam span:nth-child(4) { left: 32%; animation-delay: 4.8s; }
 @keyframes steam-rise {
-  0% {
-    opacity: 0;
-    transform: translateY(20%) scale(0.6);
-  }
-  20% {
-    opacity: 0.9;
-  }
-  60% {
-    opacity: 0.5;
-    transform: translate(12%, -45%) scale(1.1) rotate(6deg);
-  }
-  to {
-    opacity: 0;
-    transform: translate(-8%, -95%) scale(1.4) rotate(-4deg);
-  }
+  0% { opacity: 0; transform: translateY(15%) scaleX(0.7); }
+  30% { opacity: 0.8; }
+  65% { opacity: 0.45; transform: translate(10%, -40%) scaleX(1) rotate(5deg); }
+  100% { opacity: 0; transform: translate(-6%, -85%) scaleX(1.3) rotate(-4deg); }
 }
 .closing {
   z-index: 1;
@@ -1397,36 +1368,30 @@ h3 {
   100% { opacity: 0; transform: translate(-0.6%, -22%) scale(1.04, 1.2); }
 }
 
-/* Price tag sitting on the plate */
+/* Price on the plate: just the number, editorial style */
 .price-tag {
   position: absolute;
   z-index: 2;
-  top: 4%;
-  right: 2%;
-  display: grid;
-  place-items: center;
-  width: clamp(54px, 5.6vw, 92px);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: var(--sb-charcoal);
-  border: 2px solid var(--sb-ember);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
-  color: var(--sb-white);
+  top: 2%;
+  right: -2%;
+  display: inline-flex;
+  align-items: flex-start;
   font-family: var(--condensed);
   font-weight: 700;
-  font-size: clamp(14px, 1.4vw, 24px);
-  letter-spacing: 0.01em;
-  transform: rotate(-10deg);
+  line-height: 0.85;
+  color: var(--sb-white);
+  font-size: clamp(26px, 2.6vw, 44px);
+  letter-spacing: -0.01em;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.7);
   pointer-events: none;
 }
-.price-tag::before {
-  content: "";
-  position: absolute;
-  inset: 4px;
-  border-radius: 50%;
-  border: 1px dashed rgba(233, 139, 44, 0.55);
+.price-tag small {
+  font-size: 0.5em;
+  line-height: 1;
+  margin-left: 0.06em;
+  margin-top: 0.08em;
+  color: var(--sb-ember);
 }
-
 /* Whole card is the link to ordering */
 .plate-card {
   position: relative;
@@ -1530,14 +1495,9 @@ h3 {
 }
 @media (width <= 767px) {
   .price-tag {
-    width: 40px;
-    font-size: 11px;
-    border-width: 1.5px;
-    top: 0;
-    right: -4%;
-  }
-  .price-tag::before {
-    inset: 2px;
+    font-size: 19px;
+    top: -2%;
+    right: -6%;
   }
   .plate-card__cta {
     font-size: 11px;
