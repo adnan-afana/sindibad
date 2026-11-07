@@ -10,6 +10,7 @@ export function MoreDishes({ model }: { model: SceneModel }) {
       <div className="plates__grid">
         {moreDishes.map((d) => <PlateCard key={d.id} model={model} dish={d} live={false} />)}
       </div>
+      <div className="plates__cta"><a className="order-button" href="#menu">View full menu</a></div>
     </section>
   )
 }

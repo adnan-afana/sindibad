@@ -451,6 +451,7 @@ export function GrillToPlateScene({ model }: { model: SceneModel }) {
                 {moreDishes.map((d) => <PlateCard key={d.id} model={model} dish={{ ...d, id: `${d.id}-m` }} live={false} />)}
               </div>
             )}
+            <div className="plates__cta plates__cta--inline"><a className="order-button" href="#menu">View full menu</a></div>
           </section>
         </div>
       </div>

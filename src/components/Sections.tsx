@@ -47,7 +47,6 @@ export function Testimonials() {
             <button key={i} type="button" className="voices__dot" data-voice-dot={i} aria-label={`Review ${i + 1}`} />
           ))}
         </div>
-        <a className="order-button" href="#menu">See the menu</a>
         <p className="section__note">{testimonials.sampleNote}</p>
       </div>
     </section>
