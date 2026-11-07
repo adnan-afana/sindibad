@@ -10,6 +10,7 @@ import { MoreDishes } from './components/MoreDishes'
 import { MoreSections, SiteFooter } from './components/Sections'
 
 const OwnerEditor = lazy(() => import('./components/OwnerEditor'))
+const EMPTY_MODEL: SceneModel = {}
 const isOwnerMode = () => window.location.hash === '#owner'
 
 /** Owner edits (this browser only) are shown on the site when switched on in owner mode. */
@@ -78,7 +79,8 @@ function Site({ model }: { model: SceneModel }) {
 
 export default function App() {
   const [owner] = useState(isOwnerMode)
-  const [model, setModel] = useState<SceneModel | null>(null)
+  // Render the site immediately; owner edits (if any) are applied once they load.
+  const [model, setModel] = useState<SceneModel>(EMPTY_MODEL)
 
   // Switching between the site and owner mode reloads the page (as before).
   useEffect(() => {
@@ -88,7 +90,7 @@ export default function App() {
   }, [owner])
 
   useEffect(() => {
-    if (!owner) loadModel().then(setModel)
+    if (!owner) loadModel().then((m) => { if (m.local) setModel(m) }).catch(() => {})
   }, [owner])
 
   if (owner)
@@ -97,7 +99,6 @@ export default function App() {
         <OwnerEditor />
       </Suspense>
     )
-  if (!model) return <div className="loading" aria-busy="true" />
   return (
     <>
       <Site model={model} />
