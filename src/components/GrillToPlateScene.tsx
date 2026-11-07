@@ -84,7 +84,12 @@ function PlateCard({ model, dish }: { model: SceneModel; dish: (typeof dishes)[n
             <span key={`${id}-${i}`} className="anchor" data-end={`${id}:${i}`} style={{ left: `${p.final.x}%`, top: `${p.final.y}%` }} />
           )),
         )}
-        {dish.price && <span className="price-tag" aria-hidden="true">{dish.price}</span>}
+        {dish.price && (
+          <span className="price-tag" aria-hidden="true">
+            {dish.price.split('.')[0]}
+            {dish.price.includes('.') && <small>{dish.price.split('.')[1]}</small>}
+          </span>
+        )}
         <span className="visually-hidden">{dish.name}, plated</span>
       </div>
       <div className="plate-card__body mt-[clamp(0.75rem,2vh,1.5rem)] flex flex-col items-center gap-[0.6rem]">
@@ -230,6 +235,15 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
   }
   let pin: ScrollTrigger | null = null
 
+  // "Rest": when scrolling stops while food is only lifted (not yet flying), it eases back down
+  // onto the grill on its own clock, and lifts again smoothly as soon as scrolling resumes.
+  const rest = { v: 0 }
+  const progressOf = new Map<MoverRefs, Progress>()
+  const smooth01 = (a: number, b: number, v: number) => {
+    const t = Math.min(1, Math.max(0, (v - a) / (b - a)))
+    return t * t * (3 - 2 * t)
+  }
+
   // ---- rendering of a mover pose (transform only) ----
   const renderMover = (m: MoverRefs, p: Progress) => {
     if (!m.plan) return
@@ -239,7 +253,12 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
       const scrolled = getLenis()?.animatedScroll ?? window.scrollY
       journeyTop = -Math.max(0, scrolled - pin.end)
     }
-    const pose = poseAt(p, m.slot, m.plan, motion, vp, journeyTop - p.flight * travel)
+    let q = p
+    if (rest.v > 0 && p.flight < 0.06) {
+      const settleBack = rest.v * (1 - smooth01(0, 0.06, p.flight))
+      q = { ...p, lift: p.lift * (1 - settleBack) }
+    }
+    const pose = poseAt(q, m.slot, m.plan, motion, vp, journeyTop - p.flight * travel)
     m.set.x(pose.x)
     m.set.y(pose.y)
     m.set.rotation(pose.rotation)
@@ -310,6 +329,7 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
     // One timeline per travelling food item.
     movers.forEach((m, index) => {
       const p = startProgress()
+      progressOf.set(m, p)
       const t = gsap.timeline({
         scrollTrigger: trigger({ onRefresh: () => renderMover(m, p) }),
         onUpdate: () => renderMover(m, p),
@@ -349,6 +369,22 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
       seal(t)
     }
 
+    // Rest the food back on the grill when the user stops scrolling near the start.
+    const renderAll = () => movers.forEach((m) => { const p = progressOf.get(m); if (p) renderMover(m, p) })
+    let restTween: gsap.core.Tween | null = null
+    const onScrollStart = () => {
+      restTween?.kill()
+      restTween = rest.v > 0 ? gsap.to(rest, { v: 0, duration: 0.45, ease: 'power2.out', onUpdate: renderAll }) : null
+    }
+    const onScrollEnd = () => {
+      const lifted = movers.some((m) => { const p = progressOf.get(m); return !!p && p.flight < 0.06 && p.lift > 0.02 })
+      if (!lifted) return
+      restTween?.kill()
+      restTween = gsap.to(rest, { v: 1, duration: 1.2, delay: 0.15, ease: 'sine.inOut', onUpdate: renderAll })
+    }
+    ScrollTrigger.addEventListener('scrollStart', onScrollStart)
+    ScrollTrigger.addEventListener('scrollEnd', onScrollEnd)
+
     // "Menu" / "Order now" jump to the end of the scene, where the plates are full.
     const onClick = (e: MouseEvent) => {
       const a = (e.target as Element | null)?.closest?.('a[href="#menu"]')
@@ -363,6 +399,10 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
 
     return () => {
       ScrollTrigger.removeEventListener('refreshInit', measure)
+      ScrollTrigger.removeEventListener('scrollStart', onScrollStart)
+      ScrollTrigger.removeEventListener('scrollEnd', onScrollEnd)
+      restTween?.kill()
+      rest.v = 0
       document.removeEventListener('click', onClick)
       pin = null
       delete journey.dataset.mode
