@@ -47,6 +47,7 @@ export function Testimonials() {
             <button key={i} type="button" className="voices__dot" data-voice-dot={i} aria-label={`Review ${i + 1}`} />
           ))}
         </div>
+        <a className="order-button" href="#menu">See the menu</a>
         <p className="section__note">{testimonials.sampleNote}</p>
       </div>
     </section>
@@ -69,6 +70,7 @@ export function Loyalty() {
           <div data-reveal><a className="order-button" href={loyalty.cta.href}>{loyalty.cta.label}</a></div>
         </div>
         <div className="club__card" data-club-card aria-label={`Stamp card: ${loyalty.filled} of ${loyalty.stamps} stamps`}>
+          <span className="club__watermark" aria-hidden="true">Sindibad</span>
           <div className="club__card-head">
             <img src={assets.logo} alt="" width={514} height={236} loading="lazy" decoding="async" />
             <span>{loyalty.ghost}</span>
