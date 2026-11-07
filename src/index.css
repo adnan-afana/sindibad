@@ -142,7 +142,9 @@ h3 {
   background: linear-gradient(
     180deg,
     var(--hero-black) 0%,
-    rgba(27, 25, 22, 0) 12%,
+    rgba(27, 25, 22, 0.94) 13%,
+    rgba(27, 25, 22, 0.6) 19%,
+    rgba(27, 25, 22, 0) 25%,
     rgba(27, 25, 22, 0) 80%,
     var(--hero-black) 100%
   );
@@ -168,6 +170,8 @@ h3 {
   right: 0;
   top: calc(var(--band-top) * 1%);
   height: calc(var(--band-h) * 1%);
+  /* fire stays inside the grill: the coal bed between the back rim and the front edge */
+  clip-path: polygon(7% 27%, 93% 27%, 98% 93%, 2% 93%);
   overflow: hidden;
   mix-blend-mode: screen;
   opacity: 0.38;
@@ -260,19 +264,19 @@ h3 {
 @keyframes flame-lick {
   0% {
     opacity: 0;
-    transform: translate(0, 0) scale(1);
+    transform: translate(0, 0) scale(1, 1);
   }
   35% {
     opacity: 0.42;
-    transform: translate(0.15%, -1.607%) scale(1.01, 1.06);
+    transform: translate(0.15%, -0.6%) scale(1.01, 1.03);
   }
   60% {
     opacity: 0.22;
-    transform: translate(-0.2%, -4.643%) scale(0.995, 1.2);
+    transform: translate(-0.2%, -1.2%) scale(0.995, 1.06);
   }
-  to {
+  100% {
     opacity: 0;
-    transform: translateY(-6.429%) scaleY(1.28);
+    transform: translate(0, -1.6%) scale(1, 1.08);
   }
 }
 @keyframes flame-dance {
@@ -294,6 +298,7 @@ h3 {
   }
 }
 .flame-tongues {
+  clip-path: inset(24% 0 0 0);
   mix-blend-mode: screen;
   pointer-events: none;
   filter: blur(1.6px) saturate(1.25);
@@ -350,6 +355,7 @@ h3 {
   }
 }
 .embers {
+  overflow: hidden;
   pointer-events: none;
   height: 34%;
   position: absolute;
