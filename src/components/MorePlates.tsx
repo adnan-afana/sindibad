@@ -16,6 +16,7 @@ export function MorePlates() {
             </div>
             <div className="plate-card__body mt-[clamp(0.75rem,2vh,1.5rem)] flex flex-col items-center gap-[0.6rem]">
               <h3 id={`more-dish-${i}`}>{dish.name}</h3>
+              {dish.description && <p className="plate-card__description">{dish.description}</p>}
               {dish.price && <p className="plate-card__price">{dish.price}</p>}
               <a className="order-button order-button--small" href={hero.order.href}>{hero.order.label}</a>
             </div>

@@ -30,9 +30,9 @@ export const platesSection = { title: 'Our plates' }
 export const closing = { title: 'Reserve your table', button: 'Book a table' }
 
 export const dishes: { id: DishId; name: string; price?: string; description?: string }[] = [
-  { id: 'chicken', name: 'Half Chicken' },
-  { id: 'tawook', name: 'Shish Tawook' },
-  { id: 'kebab', name: 'Kebab' },
+  { id: 'chicken', name: 'Half Chicken', price: '$—', description: 'Marinated overnight, charcoal-grilled' },
+  { id: 'tawook', name: 'Shish Tawook', price: '$18.99', description: 'Marinated chicken breast skewers' },
+  { id: 'kebab', name: 'Kebab', price: '$18.99', description: 'Hand-shaped spiced beef skewers' },
 ]
 
 /**
@@ -41,16 +41,16 @@ export const dishes: { id: DishId; name: string; price?: string; description?: s
  * To add a dish: put a transparent plate photo in public/assets/plates/ and add a line here
  * (aspect = image width / height). Add or remove lines freely; rows fill three at a time.
  */
-export const morePlates: { name: string; image: string; aspect: number; price?: string }[] = [
-  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962 },
-  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962 },
-  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962 },
-  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962 },
-  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962 },
-  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962 },
-  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962 },
-  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962 },
-  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962 },
+export const morePlates: { name: string; image: string; aspect: number; price?: string; description?: string }[] = [
+  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962, price: '$18.99', description: 'Marinated chicken breast skewers' },
+  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962, price: '$18.99', description: 'Marinated chicken breast skewers' },
+  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962, price: '$18.99', description: 'Marinated chicken breast skewers' },
+  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962, price: '$18.99', description: 'Marinated chicken breast skewers' },
+  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962, price: '$18.99', description: 'Marinated chicken breast skewers' },
+  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962, price: '$18.99', description: 'Marinated chicken breast skewers' },
+  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962, price: '$18.99', description: 'Marinated chicken breast skewers' },
+  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962, price: '$18.99', description: 'Marinated chicken breast skewers' },
+  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962, price: '$18.99', description: 'Marinated chicken breast skewers' },
 ]
 
 /** Back-to-front order of everything on the grill. */

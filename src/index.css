@@ -354,6 +354,47 @@ h3 {
     transform: translateY(-24%) scale(0.3, 1.25) skew(-2deg);
   }
 }
+.grill-smoke {
+  /* above the photo's edge fade, so the wisps read over the dark top of the hero */
+  z-index: 1;
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 2%;
+  height: 40%;
+  pointer-events: none;
+}
+.grill-smoke span {
+  position: absolute;
+  bottom: 0;
+  width: 16%;
+  aspect-ratio: 1 / 1.7;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(225, 214, 202, 0.34), rgba(225, 214, 202, 0));
+  filter: blur(12px);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation-name: smoke-rise;
+  animation-timing-function: ease-out;
+  animation-iteration-count: infinite;
+}
+@keyframes smoke-rise {
+  0% {
+    opacity: 0;
+    transform: translate(0, 10%) scale(0.6);
+  }
+  25% {
+    opacity: 0.85;
+  }
+  60% {
+    opacity: 0.5;
+    transform: translate(14%, -45%) scale(1.05) rotate(6deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-6%, -95%) scale(1.45) rotate(-4deg);
+  }
+}
 .embers {
   overflow: hidden;
   pointer-events: none;
@@ -820,7 +861,7 @@ h3 {
   display: grid;
 }
 .plate-card__plate {
-  width: min(100%, 64svh);
+  width: min(80%, 50svh);
   max-width: 100%;
   position: relative;
 }
@@ -860,6 +901,7 @@ h3 {
   font-weight: 600;
 }
 .plate-card__description {
+  font-size: clamp(12px, 0.95vw, 15px);
   max-width: 26rem;
   color: var(--muted);
   margin: 0;
@@ -1013,7 +1055,7 @@ h3 {
     row-gap: 2rem;
   }
   .plate-card__plate {
-    width: 100%;
+    width: 86%;
   }
   .plate-card__body h3 {
     font-size: clamp(0.95rem, 4.4vw, 1.25rem);
@@ -1036,7 +1078,8 @@ h3 {
 .journey[data-fire] .grill-stage__image,
 .journey[data-fire] .grill-stage__flames,
 .journey[data-fire] .flame-tongues,
-.journey[data-fire] .embers {
+.journey[data-fire] .embers,
+.journey[data-fire] .grill-smoke {
   visibility: hidden;
 }
 .journey[data-fire] .grill-stage__flames,
@@ -1060,6 +1103,7 @@ h3 {
   .grill-stage__flames--lick,
   .grill-stage__flames--dance,
   .flame-tongues,
+  .grill-smoke,
   .embers {
     display: none;
   }
