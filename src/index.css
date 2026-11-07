@@ -2175,3 +2175,83 @@ h3 {
   }
 }
 }
+
+@layer components {
+/* stamp card v2: cream paper ticket, ink stamps, Sindibad watermark */
+.club__card {
+  color: var(--sb-charcoal);
+  overflow: hidden;
+  border: 0;
+  background:
+    radial-gradient(120% 80% at 0% 0%, rgba(255, 255, 255, 0.55), transparent 55%),
+    radial-gradient(90% 70% at 100% 100%, rgba(233, 139, 44, 0.14), transparent 60%),
+    #f4ead9;
+  box-shadow:
+    0 40px 80px -30px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(143, 45, 32, 0.12) inset,
+    0 0 60px -10px rgba(233, 139, 44, 0.25);
+  /* ticket notches on both sides */
+  -webkit-mask: radial-gradient(circle 14px at 0 62%, transparent 98%, #000) left / 51% 100% no-repeat,
+                radial-gradient(circle 14px at 100% 62%, transparent 98%, #000) right / 51% 100% no-repeat;
+          mask: radial-gradient(circle 14px at 0 62%, transparent 98%, #000) left / 51% 100% no-repeat,
+                radial-gradient(circle 14px at 100% 62%, transparent 98%, #000) right / 51% 100% no-repeat;
+}
+.club__card::before {
+  /* inner stitched border */
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border: 1.5px dashed rgba(143, 45, 32, 0.28);
+  border-radius: 8px;
+  pointer-events: none;
+}
+.club__watermark {
+  position: absolute;
+  right: -0.08em;
+  bottom: -0.22em;
+  font-family: var(--condensed);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: clamp(5rem, 11vw, 10rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: rgba(143, 45, 32, 0.07);
+  transform: rotate(-8deg);
+  pointer-events: none;
+  user-select: none;
+}
+.club__card > :not(.club__watermark) {
+  position: relative;
+}
+.club__card-head span,
+.club__card-foot {
+  color: var(--sb-gray);
+}
+.club__card-foot b {
+  color: var(--sb-red);
+}
+.coal {
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow: none;
+  border: 2px dashed rgba(107, 98, 92, 0.35);
+}
+.coal i {
+  color: rgba(107, 98, 92, 0.6);
+}
+.coal--lit {
+  border: 2px solid rgba(143, 45, 32, 0.55);
+  background: radial-gradient(circle at 50% 65%, rgba(233, 139, 44, 0.28), rgba(248, 242, 233, 0.6) 70%);
+  box-shadow: 0 0 0 4px rgba(143, 45, 32, 0.06);
+}
+.coal--lit:nth-child(odd) { transform: rotate(-6deg); }
+.coal--lit:nth-child(even) { transform: rotate(5deg); }
+.coal--lit img {
+  width: 58%;
+  mix-blend-mode: multiply;
+}
+.coal--free {
+  border: 0;
+  background: var(--sb-red);
+  box-shadow: 0 0 0 4px rgba(143, 45, 32, 0.15), 0 8px 18px -6px rgba(143, 45, 32, 0.6);
+}
+}
