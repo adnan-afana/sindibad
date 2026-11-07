@@ -2072,9 +2072,11 @@ h3 {
 }
 .voice__mark {
   display: block;
-  height: 0.5em;
-  margin-bottom: 0.12em;
-  font-size: 1.6em;
+  height: 0.42em;
+  margin-bottom: -0.6rem;
+  font-family: var(--condensed);
+  font-weight: 700;
+  font-size: clamp(3.2rem, 7.4vw, 7.4rem);
   line-height: 1;
   color: var(--sb-ember);
 }
