@@ -68,10 +68,10 @@ export const food: FoodLayout = {
       canvasWidth: 109.5455,
       canvasAspect: 1024 / 1205,
       metal: null,
-      rotation: -36,
-      plateScale: 0.5, // was 0.41992 — larger half chicken on the plate
+      rotation: 5,
+      plateScale: 0.6, // sized to the rice, sitting on top of it
       pieces: [
-        { src: 'assets/food/chicken-piece-1.webp', rect: { x: 0.0, y: 0.0, w: 100.0, h: 100.0 }, final: { x: 40.0, y: 64.9582 }, finalRotation: -36 },
+        { src: 'assets/food/chicken-piece-1.webp', rect: { x: 0.0, y: 0.0, w: 100.0, h: 100.0 }, final: { x: 40, y: 61 }, finalRotation: 5 },
       ],
     },
   },

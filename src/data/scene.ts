@@ -3,6 +3,8 @@ import type { DishId, GrillItem, Motion } from './types'
 export const assets = {
   grill: 'assets/hero/grill-hero.webp',
   flames: 'assets/hero/flames.webp',
+  /** smoke lifted out of the grill photo (top 22.5% of it), animated on its own */
+  smoke: 'assets/hero/smoke.webp',
   logo: 'assets/brand/logo.webp',
 } as const
 
