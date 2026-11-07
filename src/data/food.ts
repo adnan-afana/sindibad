@@ -69,7 +69,7 @@ export const food: FoodLayout = {
       canvasAspect: 1024 / 1205,
       metal: null,
       rotation: -36,
-      plateScale: 0.41992,
+      plateScale: 0.5, // was 0.41992 — larger half chicken on the plate
       pieces: [
         { src: 'assets/food/chicken-piece-1.webp', rect: { x: 0.0, y: 0.0, w: 100.0, h: 100.0 }, final: { x: 40.0, y: 64.9582 }, finalRotation: -36 },
       ],

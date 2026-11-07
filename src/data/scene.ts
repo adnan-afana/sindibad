@@ -27,10 +27,38 @@ export const hero = {
 export const platesSection = { title: 'Our plates' }
 export const closing = { title: 'Reserve your table', button: 'Book a table' }
 
+/** Prices and descriptions are PLACEHOLDERS — replace with the real menu. Descriptions: 5 words max. */
 export const dishes: { id: DishId; name: string; price?: string; description?: string }[] = [
-  { id: 'chicken', name: 'Half Chicken' },
-  { id: 'tawook', name: 'Shish Tawook' },
-  { id: 'kebab', name: 'Kebab' },
+  { id: 'chicken', name: 'Half Chicken', price: '$18.99', description: 'Charcoal-grilled with garlic toum' },
+  { id: 'tawook', name: 'Shish Tawook', price: '$17.99', description: 'Marinated chicken skewers, rice' },
+  { id: 'kebab', name: 'Kebab', price: '$18.99', description: 'Seasoned beef kafta, flame-grilled' },
+]
+
+/** Shown as a badge in the hero. */
+export const halal = { label: '100% Halal', title: 'All our meat is halal' }
+
+/**
+ * Opening hours (24h clock, restaurant's local time). PLACEHOLDERS — replace with the real hours.
+ * 0 = Sunday … 6 = Saturday. `close` past midnight is fine (e.g. '01:00').
+ */
+export const openingHours = {
+  timeZone: 'America/Toronto',
+  days: {
+    0: { open: '12:00', close: '22:00' },
+    1: { open: '11:00', close: '22:00' },
+    2: { open: '11:00', close: '22:00' },
+    3: { open: '11:00', close: '22:00' },
+    4: { open: '11:00', close: '22:00' },
+    5: { open: '11:00', close: '23:00' },
+    6: { open: '11:00', close: '23:00' },
+  } as Record<number, { open: string; close: string } | null>,
+}
+
+/** Smoke puffs drifting up from the grill (x in %, seconds). */
+export const smoke = [
+  { x: 6, delay: 0, dur: 7.5 }, { x: 20, delay: 2.4, dur: 8.5 }, { x: 34, delay: 1.1, dur: 7 },
+  { x: 48, delay: 3.6, dur: 9 }, { x: 60, delay: 0.6, dur: 7.8 }, { x: 72, delay: 2.9, dur: 8.2 },
+  { x: 84, delay: 4.4, dur: 7.2 },
 ]
 
 /** Back-to-front order of everything on the grill. */
