@@ -1967,3 +1967,153 @@ h3 {
   }
 }
 }
+
+@layer components {
+/* Reviews — continues the hero: charcoal, ember glow, drifting smoke, sparks, headline-style quote */
+.voices {
+  min-height: min(88svh, 820px);
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(60% 55% at 50% 62%, color-mix(in srgb, var(--sb-ember) 16%, transparent), transparent 70%),
+    radial-gradient(70% 30% at 50% 78%, color-mix(in srgb, var(--sb-red) 20%, transparent), transparent 75%),
+    var(--sb-charcoal);
+}
+.voices__smoke {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 14%;
+  height: 45%;
+  pointer-events: none;
+  opacity: 0.6;
+  -webkit-mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent);
+  mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent);
+}
+.voices__smoke img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  object-fit: cover;
+  mix-blend-mode: plus-lighter;
+  transform-origin: 50% 100%;
+  animation: smoke-drift 9s linear infinite;
+}
+.voices__smoke img + img {
+  animation-delay: -4.5s;
+}
+.voices__sparks {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: 10%;
+  height: 55%;
+  pointer-events: none;
+}
+.voices__sparks span {
+  position: absolute;
+  bottom: 0;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  opacity: 0;
+  background: color-mix(in srgb, var(--sb-ember) 70%, var(--sb-white));
+  box-shadow: 0 0 6px 2px color-mix(in srgb, var(--sb-ember) 85%, transparent);
+  animation: ember-rise ease-out infinite;
+}
+.voices__inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.5rem, 4vh, 2.5rem);
+  text-align: center;
+}
+.voices__kicker {
+  margin: 0;
+}
+.voices__kicker .pill {
+  font-size: clamp(12px, 0.95vw, 15px);
+}
+.voices__kicker .stars svg {
+  width: 12px;
+  height: 12px;
+}
+.voices__stage {
+  display: grid;
+  width: 100%;
+}
+.voice {
+  grid-area: 1 / 1;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+.voice blockquote {
+  position: relative;
+  margin: 0;
+  max-width: 20ch;
+  font-family: var(--condensed);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  color: var(--sb-white);
+  font-size: clamp(2rem, 4.6vw, 4.6rem);
+  line-height: 1;
+  text-shadow: 0 2px 24px rgba(27, 25, 22, 0.6);
+  text-wrap: balance;
+}
+.voice__mark {
+  display: block;
+  height: 0.5em;
+  margin-bottom: 0.12em;
+  font-size: 1.6em;
+  line-height: 1;
+  color: var(--sb-ember);
+}
+.voice figcaption {
+  font-family: var(--condensed);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: clamp(12px, 1vw, 15px);
+  color: var(--ink-soft);
+}
+.voices__dots {
+  display: flex;
+  gap: 10px;
+}
+.voices__dot {
+  width: 28px;
+  height: 4px;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: rgba(248, 242, 233, 0.2);
+  cursor: pointer;
+  transition: background-color 0.3s, width 0.3s;
+}
+.voices__dot.is-on {
+  width: 44px;
+  background: var(--sb-ember);
+}
+.voices__dot:focus-visible {
+  outline: 2px solid var(--sb-ember);
+  outline-offset: 4px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .voices__smoke img,
+  .voices__sparks span {
+    animation: none;
+  }
+  .voice + .voice {
+    display: none;
+  }
+}
+}
