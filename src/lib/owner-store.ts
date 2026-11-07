@@ -88,3 +88,37 @@ export function adjustTransform(a: Adjust = noAdjust) {
     return `translate(${a.x * 100}%, ${a.y * 100}%) rotate(${a.rotation}deg) scale(${a.scale})`
   return undefined
 }
+
+/** Edits published with the site: public/assets/owner/site-images.json (+ the image files beside it). */
+export interface Published { adjust: Record<string, Adjust>; images: Record<string, string> }
+export const PUBLISHED_DIR = 'assets/owner/'
+export async function loadPublished(): Promise<Published> {
+  try {
+    const r = await fetch(PUBLISHED_DIR + 'site-images.json', { cache: 'no-cache' })
+    if (!r.ok) return { adjust: {}, images: {} }
+    const d = await r.json()
+    const images: Record<string, string> = {}
+    for (const [k, f] of Object.entries((d.images ?? {}) as Record<string, string>)) images[k] = PUBLISHED_DIR + f
+    return { adjust: d.adjust ?? {}, images }
+  } catch {
+    return { adjust: {}, images: {} }
+  }
+}
+const extFor = (b: Blob) => ({ 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/avif': 'avif' } as Record<string, string>)[b.type] ?? 'png'
+/** ZIP with site-images.json + the new image files, to drop into public/assets/owner/ on GitHub. */
+export async function publishBundle(state: OwnerState, published: Published) {
+  const { makeZip } = await import('./zip')
+  const stamp = Date.now().toString(36)
+  const files: { name: string; data: Blob | string }[] = []
+  const images: Record<string, string> = {}
+  for (const [k, p] of Object.entries(published.images)) if (!k.startsWith('reference:')) images[k] = p.slice(PUBLISHED_DIR.length)
+  for (const [k, b] of Object.entries(state.images)) {
+    if (k.startsWith('reference:')) continue
+    const name = `${k.replace(':', '-')}-${stamp}.${extFor(b)}`
+    images[k] = name
+    files.push({ name, data: b })
+  }
+  const adjust = { ...published.adjust, ...state.adjust }
+  files.unshift({ name: 'site-images.json', data: JSON.stringify({ kind: 'sindibad-site-images', version: 1, adjust, images }, null, 2) })
+  return makeZip(files)
+}

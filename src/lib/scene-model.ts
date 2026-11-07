@@ -7,6 +7,8 @@ import { piecesFor } from './journey-math'
 import { adjustTransform, baseKey, foodKey } from './owner-store'
 
 export interface SceneModel {
+  /** true when this browser's unpublished owner edits are being shown */
+  browserEdits?: boolean
   local?: LocalOverrides
 }
 
