@@ -132,6 +132,21 @@ h3 {
   left: calc(50cqw - var(--stage-w) / 2);
   top: calc(50cqh - var(--stage-w) * 0.2813995);
 }
+/* The photo's own edges are near-black; on phones they sit inside the hero and showed as a hard
+   line. This fades the top and bottom of the photo into the hero colour. Drawn once, never animated. */
+.grill-stage::after {
+  content: "";
+  position: absolute;
+  inset: -1px 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    var(--hero-black) 0%,
+    rgba(27, 25, 22, 0) 12%,
+    rgba(27, 25, 22, 0) 80%,
+    var(--hero-black) 100%
+  );
+}
 .grill-stage__image {
   width: 100%;
   max-width: none;
@@ -395,9 +410,10 @@ h3 {
       rgba(27, 25, 22, 0) 22%
     ),
     linear-gradient(
-      rgba(27, 25, 22, 0) 70%,
-      rgba(27, 25, 22, 0.45) 86%,
-      rgba(27, 25, 22, 0.85) 100%
+      rgba(27, 25, 22, 0) 64%,
+      rgba(27, 25, 22, 0.5) 82%,
+      rgba(27, 25, 22, 0.9) 94%,
+      rgb(27, 25, 22) 100%
     );
   position: absolute;
   inset: 0;
@@ -545,7 +561,8 @@ h3 {
       linear-gradient(
         rgba(27, 25, 22, 0) 58%,
         rgba(27, 25, 22, 0.6) 76%,
-        rgba(27, 25, 22, 0.95) 100%
+        rgba(27, 25, 22, 0.92) 92%,
+        rgb(27, 25, 22) 100%
       );
   }
   .site-header {
@@ -708,7 +725,7 @@ h3 {
 .plates {
   color: var(--sb-cream);
   background:
-    linear-gradient(180deg, var(--sb-charcoal) 0%, rgba(27, 25, 22, 0) 22%),
+    linear-gradient(180deg, var(--sb-charcoal) 0%, rgba(27, 25, 22, 0.55) 14%, rgba(27, 25, 22, 0) 34%),
     radial-gradient(
       85% 60% at 50% 46%,
       color-mix(in srgb, var(--sb-ember) 7%, transparent),
@@ -862,14 +879,13 @@ h3 {
 .closing {
   z-index: 1;
   text-align: center;
-  border-top: 1px solid var(--line);
   background:
     radial-gradient(
       70% 90% at 50% 100%,
       color-mix(in srgb, var(--sb-ember) 16%, transparent),
       transparent 70%
     ),
-    var(--deep);
+    linear-gradient(180deg, var(--page) 0%, var(--deep) 45%);
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;

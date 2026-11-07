@@ -11,7 +11,7 @@ export const assets = {
 /** Intrinsic image sizes, used for width/height attributes (prevents layout shift). */
 export const imageSize = {
   grill: [1672, 941],
-  logo: [514, 236],
+  logo: [1100, 553],
   plate: [1100, 956],
 } as const
 
