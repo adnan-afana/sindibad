@@ -40,6 +40,17 @@ export const dishes: { id: DishId; name: string; price?: string; description?: s
   { id: 'kebab', name: 'Kebab', price: '18.99', description: 'Seasoned beef kafta, flame-grilled' },
 ]
 
+/**
+ * More dishes, shown in extra rows under the scene (no grill flight).
+ * PLACEHOLDERS reusing the three plate photos — replace name/price/description and, later, the photos.
+ * `plate` picks which plate photo to show.
+ */
+export const moreDishes: { id: string; plate: DishId; name: string; price?: string; description?: string }[] = [
+  { id: 'chicken-2', plate: 'chicken', name: 'Half Chicken', price: '18.99', description: 'Charcoal-grilled with garlic toum' },
+  { id: 'tawook-2', plate: 'tawook', name: 'Shish Tawook', price: '17.99', description: 'Marinated chicken skewers, rice' },
+  { id: 'kebab-2', plate: 'kebab', name: 'Kebab', price: '18.99', description: 'Seasoned beef kafta, flame-grilled' },
+]
+
 /** Shown as a badge in the hero. */
 export const halal = { label: '100% Halal', title: 'All our meat is halal' }
 
