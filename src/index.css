@@ -1725,113 +1725,6 @@ h3 {
   fill: var(--sb-ember);
 }
 
-/* Loyalty */
-.loyalty__card {
-  position: relative;
-  z-index: 1;
-  margin: clamp(2.5rem, 6vh, 4.5rem) auto 0;
-  max-width: 1100px;
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-  gap: clamp(1.5rem, 4vw, 4rem);
-  align-items: center;
-  padding: clamp(1.75rem, 4vw, 4rem);
-  border-radius: 8px;
-  background: var(--sb-cream);
-  color: var(--sb-charcoal);
-  overflow: hidden;
-  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.8);
-  transform: rotate(-2deg);
-  will-change: transform;
-}
-.loyalty__ghost {
-  position: absolute;
-  inset: auto -2% -10%;
-  font-family: var(--condensed);
-  font-weight: 700;
-  text-transform: uppercase;
-  white-space: nowrap;
-  font-size: clamp(5rem, 13vw, 13rem);
-  line-height: 1;
-  color: rgba(27, 25, 22, 0.045);
-  pointer-events: none;
-}
-.loyalty__copy {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1rem;
-}
-.loyalty__headline {
-  margin: 0;
-  font-family: var(--condensed);
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: clamp(2rem, 3.8vw, 3.9rem);
-  line-height: 0.9;
-  color: var(--sb-red);
-}
-.loyalty__text {
-  margin: 0;
-  max-width: 34ch;
-  font-size: clamp(0.95rem, 1.1vw, 1.1rem);
-  line-height: 1.5;
-  color: var(--sb-gray);
-}
-.loyalty__perks {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-.loyalty__perks li {
-  padding: 0.45em 0.9em;
-  border-radius: 999px;
-  border: 1px solid rgba(27, 25, 22, 0.18);
-  font-family: var(--condensed);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-size: 0.8rem;
-}
-.loyalty__cta {
-  margin-top: 0.5rem;
-}
-.loyalty__stamps {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: clamp(8px, 1.2vw, 16px);
-}
-.stamp {
-  aspect-ratio: 1;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  border: 2px dashed rgba(27, 25, 22, 0.22);
-  font-family: var(--condensed);
-  font-weight: 700;
-  font-size: clamp(0.8rem, 1.2vw, 1.15rem);
-  color: rgba(27, 25, 22, 0.35);
-}
-.stamp img {
-  width: 58%;
-  height: auto;
-}
-.stamp--on {
-  border: 2px solid var(--sb-charcoal);
-  background: var(--sb-charcoal);
-}
-.stamp--free {
-  border: 2px solid var(--sb-red);
-  background: var(--sb-red);
-  color: var(--sb-white);
-  text-transform: uppercase;
-  transform: rotate(-8deg);
-}
-
 /* Catering */
 .catering {
   min-height: min(92svh, 900px);
@@ -1953,9 +1846,6 @@ h3 {
   color: rgba(248, 242, 233, 0.45);
 }
 @media (width <= 767px) {
-  .loyalty__card {
-    grid-template-columns: 1fr;
-  }
   .site-footer__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2116,6 +2006,172 @@ h3 {
   }
   .voice + .voice {
     display: none;
+  }
+}
+}
+
+@layer components {
+/* Loyalty — same world as the grill: charcoal, embers, the logo's flame lighting up the stamps */
+.club {
+  background:
+    radial-gradient(45% 55% at 72% 50%, color-mix(in srgb, var(--sb-ember) 14%, transparent), transparent 70%),
+    var(--sb-charcoal);
+}
+.club__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2.5rem, 6vw, 6rem);
+  align-items: center;
+}
+.club__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(1rem, 2.4vh, 1.5rem);
+}
+.club__kicker {
+  margin: 0;
+}
+.club__kicker .pill {
+  font-size: clamp(12px, 0.95vw, 15px);
+}
+.club__headline {
+  margin: 0;
+  font-family: var(--condensed);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  color: var(--sb-white);
+  font-size: clamp(2.6rem, 5.4vw, 5.6rem);
+  line-height: 0.95;
+  text-shadow: 0 2px 24px rgba(27, 25, 22, 0.6);
+}
+.club__text {
+  margin: 0;
+  max-width: 40ch;
+  color: var(--ink-soft);
+  font-size: clamp(0.95rem, 1.1vw, 1.1rem);
+  line-height: 1.6;
+}
+.club__perks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.club__perks li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--condensed);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: clamp(13px, 1vw, 16px);
+  color: var(--sb-cream);
+}
+.club__perks img {
+  width: 18px;
+  height: auto;
+}
+
+/* the stamp card: a charcoal slab with a faint grill-grate texture */
+.club__card {
+  position: relative;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border-radius: 14px;
+  background:
+    repeating-linear-gradient(90deg, rgba(248, 242, 233, 0.025) 0 2px, transparent 2px 22px),
+    linear-gradient(160deg, #2a2520, #1f1c19 60%, #171513);
+  border: 1px solid rgba(233, 139, 44, 0.22);
+  box-shadow:
+    0 30px 70px -25px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(0, 0, 0, 0.4) inset,
+    0 -30px 60px -40px rgba(233, 139, 44, 0.35) inset;
+  transform: rotate(-1.5deg);
+  will-change: transform;
+}
+.club__card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
+}
+.club__card-head img {
+  width: clamp(96px, 9vw, 140px);
+  height: auto;
+}
+.club__card-head span {
+  font-family: var(--condensed);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+.club__stamps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(10px, 1.4vw, 18px);
+}
+.coal {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 40% 35%, #34302b, #1a1816 70%);
+  box-shadow: 0 0 0 1px rgba(248, 242, 233, 0.08) inset, 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+.coal i {
+  font-style: normal;
+  font-family: var(--condensed);
+  font-size: clamp(0.8rem, 1.1vw, 1rem);
+  color: rgba(248, 242, 233, 0.25);
+}
+.coal--lit {
+  background: radial-gradient(circle at 50% 70%, rgba(233, 139, 44, 0.45), #2a1a12 65%);
+  box-shadow: 0 0 0 1px rgba(233, 139, 44, 0.35) inset, 0 0 18px rgba(233, 139, 44, 0.25);
+}
+.coal--lit img {
+  width: 54%;
+  height: auto;
+  animation: price-flame 0.9s ease-in-out infinite alternate;
+  transform-origin: 50% 90%;
+}
+.coal--lit:nth-child(2n) img { animation-duration: 0.75s; }
+.coal--lit:nth-child(3n) img { animation-duration: 1.05s; }
+.coal--free {
+  background: var(--sb-red);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12) inset, 0 6px 18px rgba(143, 45, 32, 0.5);
+}
+.coal--free b {
+  font-family: var(--condensed);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: clamp(0.8rem, 1.15vw, 1.05rem);
+  color: var(--sb-white);
+}
+.club__card-foot {
+  margin: clamp(1.25rem, 2.5vw, 1.75rem) 0 0;
+  font-family: var(--condensed);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  text-align: right;
+}
+@media (width <= 767px) {
+  .club__inner {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .coal--lit img {
+    animation: none;
   }
 }
 }
