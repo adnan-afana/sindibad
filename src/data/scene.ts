@@ -31,9 +31,9 @@ export const closing = { title: 'Reserve your table', button: 'Book a table' }
 
 /** Prices and descriptions are PLACEHOLDERS — replace with the real menu. Descriptions: 5 words max. */
 export const dishes: { id: DishId; name: string; price?: string; description?: string }[] = [
-  { id: 'chicken', name: 'Half Chicken', price: '$18.99', description: 'Charcoal-grilled with garlic toum' },
-  { id: 'tawook', name: 'Shish Tawook', price: '$17.99', description: 'Marinated chicken skewers, rice' },
-  { id: 'kebab', name: 'Kebab', price: '$18.99', description: 'Seasoned beef kafta, flame-grilled' },
+  { id: 'chicken', name: 'Half Chicken', price: '18.99', description: 'Charcoal-grilled with garlic toum' },
+  { id: 'tawook', name: 'Shish Tawook', price: '17.99', description: 'Marinated chicken skewers, rice' },
+  { id: 'kebab', name: 'Kebab', price: '18.99', description: 'Seasoned beef kafta, flame-grilled' },
 ]
 
 /** Shown as a badge in the hero. */
