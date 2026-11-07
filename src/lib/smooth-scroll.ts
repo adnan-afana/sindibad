@@ -11,6 +11,8 @@ export const getLenis = () => lenis
 
 export function initSmoothScroll(): () => void {
   if (prefersReducedMotion()) return () => {}
+  // Phones/tablets keep the browser's own touch scrolling (smoothest and most reliable on iOS Safari).
+  if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) return () => {}
 
   lenis = new Lenis({ autoRaf: false })
   const instance = lenis
