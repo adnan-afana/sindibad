@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef } from 'react'
-import { gsap, ScrollTrigger, REDUCED_MOTION } from '../lib/gsap'
+import { gsap, ScrollTrigger, SplitText, REDUCED_MOTION } from '../lib/gsap'
 import { assets, halal } from '../data/scene'
 import { catering, contact, loyalty, testimonials } from '../data/sections'
 import { hoursSummary } from '../lib/opening-hours'
@@ -36,10 +36,8 @@ export function Testimonials() {
         <div className="voices__stage">
           {items.map((r, i) => (
             <figure key={i} className="voice" data-voice aria-hidden={i > 0 || undefined}>
-              <blockquote>
-                <span className="voice__mark" aria-hidden="true">“</span>
-                {r.quote}
-              </blockquote>
+              <span className="voice__mark" aria-hidden="true">“</span>
+              <blockquote>{r.quote}</blockquote>
               <figcaption>{r.name} · {r.meta}</figcaption>
             </figure>
           ))}
@@ -149,27 +147,56 @@ export function useSectionMotion(scope: React.RefObject<HTMLElement | null>) {
         root.querySelectorAll<HTMLElement>('[data-marquee]').forEach((el) => {
           gsap.to(el, { xPercent: -50, duration: 40, ease: 'none', repeat: -1 })
         })
-        // reviews: one quote at a time, lines rise in like the hero headline, auto-advancing
+        // reviews: one quote at a time. Lines of the old quote slide up out of their masks while
+        // the new quote's lines rise in, overlapping, so the change reads as one continuous motion.
         root.querySelectorAll<HTMLElement>('[data-voices]').forEach((sec) => {
           const quotes = [...sec.querySelectorAll<HTMLElement>('[data-voice]')]
           const dots = [...sec.querySelectorAll<HTMLElement>('[data-voice-dot]')]
           if (!quotes.length) return
+          const lines = new Map<HTMLElement, Element[]>()
           let current = 0
+          let shown = false
+          quotes.forEach((q) => {
+            const bq = q.querySelector('blockquote')
+            if (!bq) return
+            SplitText.create(bq, {
+              type: 'lines',
+              mask: 'lines',
+              autoSplit: true,
+              onSplit(self) {
+                lines.set(q, self.lines)
+                gsap.set(self.lines, { yPercent: q === quotes[current] && shown ? 0 : 110 })
+              },
+            })
+          })
+          let busy: gsap.core.Timeline | null = null
           let timer: gsap.core.Tween | null = null
           gsap.set(quotes, { autoAlpha: 0 })
-          const show = (n: number, first = false) => {
-            const prev = quotes[current]
-            current = (n + quotes.length) % quotes.length
-            const next = quotes[current]
-            dots.forEach((d, k) => d.classList.toggle('is-on', k === current))
-            quotes.forEach((q, k) => q.setAttribute('aria-hidden', String(k !== current)))
-            if (!first && prev !== next) gsap.to(prev, { autoAlpha: 0, y: -24, duration: 0.6, ease: 'power2.in' })
-            gsap.fromTo(next, { autoAlpha: 0, y: 36 }, { autoAlpha: 1, y: 0, duration: 0.9, delay: first ? 0 : 0.45, ease: 'power3.out' })
+          const show = (n: number) => {
+            const next = (n + quotes.length) % quotes.length
+            const prevQ = shown ? quotes[current] : null
+            if (prevQ === quotes[next]) return
+            busy?.progress(1)
+            const nextQ = quotes[next]
+            current = next
+            shown = true
+            dots.forEach((d, k) => d.classList.toggle('is-on', k === next))
+            quotes.forEach((q, k) => q.setAttribute('aria-hidden', String(k !== next)))
+            const tl = gsap.timeline()
+            if (prevQ) {
+              tl.to(lines.get(prevQ) ?? [], { yPercent: -110, duration: 0.9, stagger: 0.06, ease: 'power3.inOut' }, 0)
+              tl.to(prevQ.querySelectorAll('.voice__mark, figcaption'), { autoAlpha: 0, y: -10, duration: 0.6, ease: 'power2.inOut' }, 0)
+              tl.set(prevQ, { autoAlpha: 0 })
+            }
+            tl.set(nextQ, { autoAlpha: 1 }, prevQ ? 0.35 : 0)
+            tl.fromTo(lines.get(nextQ) ?? [], { yPercent: 110 }, { yPercent: 0, duration: 1.15, stagger: 0.08, ease: 'power4.out' }, prevQ ? 0.4 : 0)
+            tl.fromTo(nextQ.querySelectorAll('.voice__mark, figcaption'), { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.15, ease: 'power3.out' }, prevQ ? 0.55 : 0.15)
+            busy = tl
             timer?.kill()
-            timer = gsap.delayedCall(6.5, () => show(current + 1))
+            timer = gsap.delayedCall(7, () => show(current + 1))
           }
           dots.forEach((d, k) => d.addEventListener('click', () => show(k)))
-          ScrollTrigger.create({ trigger: sec, start: 'top 75%', once: true, onEnter: () => show(0, true) })
+          ScrollTrigger.create({ trigger: sec, start: 'top 75%', once: true, onEnter: () => show(0) })
         })
         // loyalty card straightens as it scrolls in, stamps pop in
         const card = root.querySelector<HTMLElement>('[data-loyalty-card]')
