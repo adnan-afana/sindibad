@@ -62,7 +62,7 @@ function PlateCard({ model, dish }: { model: SceneModel; dish: (typeof dishes)[n
   const w = 1100
   const h = Math.round(w / plate.aspect)
   return (
-    <article className="flex min-w-0 flex-col items-center text-center" aria-labelledby={`dish-${dish.id}`}>
+    <article className="plate-card flex min-w-0 flex-col items-center text-center" aria-labelledby={`dish-${dish.id}`}>
       <div className="plate-card__plate" data-plate={dish.id} style={{ aspectRatio: `${plate.aspect}` }}>
         <div className="absolute inset-0 will-change-transform" data-plate-visual={dish.id}>
           <img className="absolute inset-0 size-full object-contain" src={plateBase(model, dish.id)} alt="" width={w} height={h} draggable={false} decoding="async"
@@ -84,13 +84,22 @@ function PlateCard({ model, dish }: { model: SceneModel; dish: (typeof dishes)[n
             <span key={`${id}-${i}`} className="anchor" data-end={`${id}:${i}`} style={{ left: `${p.final.x}%`, top: `${p.final.y}%` }} />
           )),
         )}
+        {dish.price && <span className="price-tag" aria-hidden="true">{dish.price}</span>}
         <span className="visually-hidden">{dish.name}, plated</span>
       </div>
       <div className="plate-card__body mt-[clamp(0.75rem,2vh,1.5rem)] flex flex-col items-center gap-[0.6rem]">
-        <h3 id={`dish-${dish.id}`}>{dish.name}</h3>
-        {dish.price && <p className="plate-card__price">{dish.price}</p>}
+        <h3 id={`dish-${dish.id}`}>
+          {/* the whole card is this link (stretched with ::after) */}
+          <a className="plate-card__link" href={hero.order.href}>
+            {dish.name}
+            {dish.price && <span className="visually-hidden">, {dish.price}. Order now</span>}
+          </a>
+        </h3>
         {dish.description && <p className="plate-card__description">{dish.description}</p>}
-        <a className="order-button order-button--small" href={hero.order.href}>{hero.order.label}</a>
+        <span className="plate-card__cta" aria-hidden="true">
+          {hero.order.label}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </span>
       </div>
     </article>
   )
