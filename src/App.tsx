@@ -13,7 +13,11 @@ const isOwnerMode = () => window.location.hash === '#owner'
 
 /** Owner edits (this browser only) are shown on the site when switched on in owner mode. */
 async function loadModel(): Promise<SceneModel> {
-  const state = await loadOwnerState()
+  // Browser storage can hang without answering (some phone browsers, private windows, previews).
+  // Never let that keep the site from showing: after 1.5s, show it without owner edits.
+  const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), 1500))
+  const state = await Promise.race([loadOwnerState().catch(() => null), timeout])
+  if (!state) return {}
   if (!state.active) return {}
   const images = Object.fromEntries(Object.entries(state.images).map(([k, b]) => [k, URL.createObjectURL(b)]))
   return { local: { images, adjust: state.adjust } }
@@ -87,7 +91,7 @@ export default function App() {
   }, [owner])
 
   useEffect(() => {
-    if (!owner) loadModel().then(setModel)
+    if (!owner) loadModel().then(setModel, () => setModel({}))
   }, [owner])
 
   if (owner)
