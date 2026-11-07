@@ -2282,3 +2282,22 @@ h3 {
 }
 .site-footer__edit:hover { opacity: 1; }
 }
+
+@layer components {
+/* Touch devices (iPhone Safari): blurred/blended soft blobs can render as hard squares on WebKit.
+   The photo smoke already carries the effect, so the CSS puffs are dropped and steam is unblurred. */
+@media (hover: none), (width <= 767px) {
+  .smoke { display: none; }
+  .steam span {
+    filter: none;
+    will-change: auto;
+    background: radial-gradient(closest-side, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.12) 55%, transparent 100%);
+  }
+}
+}
+
+/* Lenis recommended base styles */
+html.lenis, html.lenis body { height: auto; }
+.lenis:not(.lenis-autoToggle).lenis-stopped { overflow: clip; }
+.lenis [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-smooth iframe { pointer-events: none; }

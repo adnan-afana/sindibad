@@ -39,7 +39,11 @@ function Site({ model }: { model: SceneModel }) {
     // Hold scrolling until the hero photo and fonts are ready, so measurements are final.
     getLenis()?.stop()
     const hero = document.querySelector<HTMLImageElement>('[data-hero-image]')
-    const ready = Promise.all([document.fonts.ready, hero?.decode().catch(() => {})])
+    // never hold scrolling for long: some mobile browsers are slow (or never answer) on fonts/decode
+    const ready = Promise.race([
+      Promise.all([document.fonts.ready, hero?.decode().catch(() => {})]),
+      new Promise((r) => setTimeout(r, 1200)),
+    ])
     let cancelled = false
     ready.then(() => {
       if (cancelled) return
