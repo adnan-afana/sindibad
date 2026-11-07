@@ -2255,3 +2255,20 @@ h3 {
   box-shadow: 0 0 0 4px rgba(143, 45, 32, 0.15), 0 8px 18px -6px rgba(143, 45, 32, 0.6);
 }
 }
+
+@layer components {
+.plates__cta {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(2rem, 5vh, 3.5rem);
+}
+.plates__cta--inline {
+  display: none;
+}
+@media (width <= 767px) {
+  .plates__cta--inline {
+    display: flex;
+    margin-top: 28px;
+  }
+}
+}
