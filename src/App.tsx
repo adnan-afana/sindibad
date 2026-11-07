@@ -7,6 +7,7 @@ import { useReveal } from './hooks/useReveal'
 import { GrillToPlateScene } from './components/GrillToPlateScene'
 import { Closing } from './components/Closing'
 import { MoreDishes } from './components/MoreDishes'
+import { MoreSections, SiteFooter } from './components/Sections'
 
 const OwnerEditor = lazy(() => import('./components/OwnerEditor'))
 const isOwnerMode = () => window.location.hash === '#owner'
@@ -68,7 +69,9 @@ function Site({ model }: { model: SceneModel }) {
     <main ref={root}>
       <GrillToPlateScene model={model} />
       <MoreDishes model={model} />
+      <MoreSections />
       <Closing />
+      <SiteFooter />
     </main>
   )
 }
