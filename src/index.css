@@ -260,13 +260,15 @@ h3 {
     transform: translateY(-1.5%) scaleY(1.1) skew(0);
   }
 }
+/* Flames stay inside the firebox, below the grate bars (clipped, never rising over the food). */
 .flame-tongues {
   mix-blend-mode: screen;
   pointer-events: none;
   filter: blur(1.6px) saturate(1.25);
-  height: 46%;
+  overflow: hidden;
+  height: 30%;
   position: absolute;
-  top: 22%;
+  top: 38%;
   left: 9%;
   right: 7%;
 }
@@ -318,9 +320,10 @@ h3 {
 }
 .embers {
   pointer-events: none;
-  height: 34%;
+  overflow: hidden;
+  height: 30%;
   position: absolute;
-  top: 34%;
+  top: 38%;
   left: 8%;
   right: 8%;
 }
@@ -347,11 +350,11 @@ h3 {
   }
   55% {
     opacity: 0.8;
-    transform: translate(10px, -110px) scale(0.8);
+    transform: translate(10px, -70px) scale(0.8);
   }
   to {
     opacity: 0;
-    transform: translate(-6px, -230px) scale(0.4);
+    transform: translate(-6px, -140px) scale(0.4);
   }
 }
 .grill-slot,
@@ -507,10 +510,114 @@ h3 {
   font-size: clamp(2.75rem, 4.9vw, 6.2rem);
   font-weight: 700;
   line-height: 1;
+}
+.hero__intro {
+  z-index: 2;
   position: absolute;
   bottom: 6.2%;
   left: max(16px, 3.3vw);
   right: max(16px, 3.3vw);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(0.75rem, 1.4vw, 1.25rem);
+}
+/* Info pills: halal + open/closed */
+.info-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.5em 0.9em;
+  border-radius: 999px;
+  font-family: var(--condensed);
+  font-weight: 500;
+  font-size: clamp(13px, 1.05vw, 17px);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--sb-white);
+  background: rgba(27, 25, 22, 0.62);
+  border: 1px solid rgba(248, 242, 233, 0.18);
+  white-space: nowrap;
+}
+.pill svg {
+  width: 1.1em;
+  height: 1.1em;
+  flex: none;
+}
+.pill--halal svg {
+  color: var(--sb-ember);
+}
+.pill__dot {
+  width: 0.55em;
+  height: 0.55em;
+  border-radius: 50%;
+  background: var(--sb-gray);
+  flex: none;
+}
+.pill--open .pill__dot {
+  background: #3fae5a; /* functional state colour: open */
+  box-shadow: 0 0 0 3px rgba(63, 174, 90, 0.25);
+}
+.pill--closed .pill__dot {
+  background: var(--sb-red);
+  box-shadow: 0 0 0 3px rgba(143, 45, 32, 0.35);
+}
+.pill__muted {
+  color: var(--ink-soft);
+}
+.closing__hours {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.closing__hours strong {
+  color: var(--sb-white);
+  font-weight: 600;
+}
+/* Animated smoke above the grill (transform/opacity only). */
+.smoke {
+  position: absolute;
+  left: 12%;
+  right: 8%;
+  top: 2%;
+  height: 28%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+.smoke span {
+  position: absolute;
+  bottom: 0;
+  width: 14%;
+  aspect-ratio: 1 / 1.3;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(214, 196, 184, 0.34), rgba(214, 196, 184, 0.12) 55%, transparent);
+  opacity: 0;
+  animation: smoke-rise ease-in-out infinite;
+  will-change: transform, opacity;
+}
+@keyframes smoke-rise {
+  0% {
+    opacity: 0;
+    transform: translate(0, 10%) scale(0.6);
+  }
+  25% {
+    opacity: 0.85;
+  }
+  60% {
+    opacity: 0.5;
+    transform: translate(18%, -45%) scale(1.15) rotate(8deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-10%, -110%) scale(1.6) rotate(-6deg);
+  }
 }
 @media (width<=767px) {
   .grill-stage {
@@ -615,7 +722,12 @@ h3 {
     text-wrap: balance;
     font-size: clamp(2.6rem, 12.5vw, 4rem);
     line-height: 0.98;
+  }
+  .hero__intro {
     bottom: 7%;
+  }
+  .pill {
+    font-size: 12px;
   }
 }
 .journey[data-mode="cinematic"] {
@@ -688,16 +800,15 @@ h3 {
   transform-origin: 50%;
 }
 .plates {
-  --sb-focus: var(--sb-red);
-  color: var(--sb-charcoal);
+  --sb-focus: var(--sb-ember);
+  color: var(--sb-white);
   background:
-    linear-gradient(180deg, var(--sb-charcoal) 0%, rgba(27, 25, 22, 0) 18%),
     radial-gradient(
       85% 60% at 50% 42%,
-      color-mix(in srgb, var(--sb-ember) 12%, transparent),
+      color-mix(in srgb, var(--sb-ember) 10%, transparent),
       transparent 72%
     ),
-    var(--sb-cream);
+    var(--sb-charcoal);
   flex-direction: column;
   justify-content: center;
   min-height: 100svh;
@@ -715,7 +826,7 @@ h3 {
   display: grid;
 }
 .plate-card__plate {
-  width: min(100%, 64svh);
+  width: min(84%, 52svh);
   max-width: 100%;
   position: relative;
 }
@@ -742,21 +853,23 @@ h3 {
   font-family: var(--condensed);
   letter-spacing: 0.01em;
   text-transform: uppercase;
-  color: var(--sb-charcoal);
+  color: var(--sb-white);
   font-size: clamp(1.5rem, 2.4vw, 2.6rem);
   font-weight: 700;
   line-height: 1;
 }
 .plate-card__price {
   font-family: var(--condensed);
-  color: var(--sb-red);
+  color: var(--sb-ember);
+  letter-spacing: 0.02em;
   margin: 0;
   font-size: clamp(1.1rem, 1.5vw, 1.5rem);
   font-weight: 600;
 }
 .plate-card__description {
   max-width: 26rem;
-  color: var(--sb-gray);
+  color: var(--ink-soft);
+  font-size: clamp(0.8rem, 1vw, 1rem);
   margin: 0;
   line-height: 1.5;
 }
@@ -781,7 +894,7 @@ h3 {
   opacity: 0;
   background: radial-gradient(
     closest-side,
-    color-mix(in srgb, var(--sb-gray) 20%, transparent),
+    rgba(255, 255, 255, 0.22),
     transparent
   );
   border-radius: 50%;
@@ -884,10 +997,20 @@ h3 {
     gap: 6px;
   }
   .plate-card__plate {
-    width: 100%;
+    width: 88%;
   }
   .plate-card__body h3 {
     font-size: clamp(0.95rem, 4.4vw, 1.25rem);
+  }
+  .plate-card__body {
+    gap: 0.35rem;
+  }
+  .plate-card__price {
+    font-size: 0.95rem;
+  }
+  .plate-card__description {
+    font-size: 0.68rem;
+    line-height: 1.35;
   }
   .order-button--small {
     height: 34px;
@@ -904,7 +1027,8 @@ h3 {
   .grill-stage__flames--lick,
   .grill-stage__flames--dance,
   .flame-tongues,
-  .embers {
+  .embers,
+  .smoke {
     display: none;
   }
 }
