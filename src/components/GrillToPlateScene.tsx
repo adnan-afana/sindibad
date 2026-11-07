@@ -11,6 +11,7 @@ import {
 import { assets, hero, imageSize, motion, platesSection } from '../data/scene'
 import type { DishId, Mover, Piece, Window } from '../data/types'
 import { FireEffects } from './FireEffects'
+import { InfoPills } from './InfoPills'
 import { SiteHeader } from './SiteHeader'
 
 /* ------------------------------------------------------------------------------------------ */
@@ -48,7 +49,10 @@ function Hero() {
         </div>
       </div>
       <div className="hero__shade" aria-hidden="true" />
-      <h1 id="hero-title" className="hero__headline" data-headline data-split>{hero.headline}</h1>
+      <div className="hero__intro" data-headline>
+        <InfoPills />
+        <h1 id="hero-title" className="hero__headline" data-split>{hero.headline}</h1>
+      </div>
     </section>
   )
 }

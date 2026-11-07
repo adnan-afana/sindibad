@@ -1,4 +1,4 @@
-import { assets, embers, flameTongues, imageSize } from '../data/scene'
+import { assets, embers, flameTongues, imageSize, smoke } from '../data/scene'
 
 /**
  * Ambient fire on the grill photo (CSS keyframe loops, compositor-only: transform + opacity).
@@ -20,6 +20,11 @@ export function FireEffects() {
       <div className="flame-tongues" aria-hidden="true">
         {flameTongues.map((t, i) => (
           <span key={i} style={{ left: `${t.x}%`, height: `${t.h}%`, width: `${t.w}%`, animationDelay: `${t.delay}s`, animationDuration: `${t.dur}s` }} />
+        ))}
+      </div>
+      <div className="smoke" aria-hidden="true">
+        {smoke.map((p, i) => (
+          <span key={i} style={{ left: `${p.x}%`, animationDelay: `${p.delay}s`, animationDuration: `${p.dur}s` }} />
         ))}
       </div>
       <div className="embers" aria-hidden="true">
