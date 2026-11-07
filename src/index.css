@@ -535,8 +535,74 @@ h3 {
 .menu-toggle {
   display: none;
 }
-.hero__headline {
+.hero__copy {
   z-index: 2;
+  position: absolute;
+  bottom: 6.2%;
+  left: max(16px, 3.3vw);
+  right: max(16px, 3.3vw);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(0.75rem, 1.6vh, 1.25rem);
+}
+.hero__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  height: 2.25em;
+  padding: 0 0.95em;
+  border-radius: 999px;
+  font-family: var(--condensed);
+  font-size: clamp(13px, 1vw, 17px);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--sb-cream);
+  background: rgba(27, 25, 22, 0.62);
+  border: 1px solid rgba(248, 242, 233, 0.16);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  white-space: nowrap;
+}
+.hero-badge__dot {
+  width: 0.55em;
+  height: 0.55em;
+  border-radius: 50%;
+  background: #6fbf73;
+  box-shadow: 0 0 0 0.25em rgba(111, 191, 115, 0.22);
+}
+.hero-badge--status[data-state="closing"] .hero-badge__dot {
+  background: var(--sb-ember);
+  box-shadow: 0 0 0 0.25em rgba(233, 139, 44, 0.24);
+}
+.hero-badge--status[data-state="closed"] .hero-badge__dot {
+  background: #c9574a;
+  box-shadow: 0 0 0 0.25em rgba(201, 87, 74, 0.22);
+}
+.hero-badge--halal {
+  color: #8fd19a;
+  border-color: rgba(143, 209, 154, 0.45);
+}
+.hero-badge--halal svg {
+  flex: none;
+  width: 1.15em;
+  height: 1.15em;
+}
+.hero-badge__ar {
+  font-family: "Noto Kufi Arabic", "Geeza Pro", "Segoe UI", Tahoma, sans-serif;
+  font-size: 1.05em;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--sb-cream);
+}
+.hero__headline {
   font-family: var(--condensed);
   letter-spacing: -0.02em;
   text-transform: uppercase;
@@ -547,10 +613,7 @@ h3 {
   font-size: clamp(2.75rem, 4.9vw, 6.2rem);
   font-weight: 700;
   line-height: 1;
-  position: absolute;
-  bottom: 6.2%;
-  left: max(16px, 3.3vw);
-  right: max(16px, 3.3vw);
+  align-self: stretch;
 }
 @media (width<=767px) {
   .grill-stage {
@@ -656,6 +719,8 @@ h3 {
     text-wrap: balance;
     font-size: clamp(2.6rem, 12.5vw, 4rem);
     line-height: 0.98;
+  }
+  .hero__copy {
     bottom: 7%;
   }
 }
