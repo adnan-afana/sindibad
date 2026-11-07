@@ -5,7 +5,6 @@ import { loadOwnerState } from './lib/owner-store'
 import type { SceneModel } from './lib/scene-model'
 import { useReveal } from './hooks/useReveal'
 import { GrillToPlateScene } from './components/GrillToPlateScene'
-import { Closing } from './components/Closing'
 import { MoreDishes } from './components/MoreDishes'
 import { MoreSections, SiteFooter } from './components/Sections'
 
@@ -71,7 +70,6 @@ function Site({ model }: { model: SceneModel }) {
       <GrillToPlateScene model={model} />
       <MoreDishes model={model} />
       <MoreSections />
-      <Closing />
       <SiteFooter />
     </main>
   )
