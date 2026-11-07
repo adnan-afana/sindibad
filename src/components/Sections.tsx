@@ -55,28 +55,36 @@ export function Testimonials() {
 
 export function Loyalty() {
   return (
-    <section className="section loyalty" id="loyalty" aria-labelledby="loyalty-title">
-      <h2 id="loyalty-title" className="mega" data-split>{loyalty.title}</h2>
-      <div className="loyalty__card" data-loyalty-card>
-        <div className="loyalty__ghost" aria-hidden="true">{loyalty.ghost}</div>
-        <div className="loyalty__copy">
-          <p className="loyalty__headline">{loyalty.headline}</p>
-          <p className="loyalty__text">{loyalty.copy}</p>
-          <ul className="loyalty__perks">
-            {loyalty.perks.map((p) => <li key={p}>{p}</li>)}
+    <section className="section club" id="loyalty" aria-labelledby="club-title" data-club>
+      <div className="club__inner">
+        <div className="club__copy">
+          <p className="club__kicker"><span className="pill">{loyalty.title}</span></p>
+          <h2 id="club-title" className="club__headline" data-split>{loyalty.headline}</h2>
+          <p className="club__text" data-reveal>{loyalty.copy}</p>
+          <ul className="club__perks" data-reveal>
+            {loyalty.perks.map((p) => (
+              <li key={p}><img src={assets.logoFlame} alt="" width={100} height={71} loading="lazy" decoding="async" />{p}</li>
+            ))}
           </ul>
-          <a className="order-button loyalty__cta" href={loyalty.cta.href}>{loyalty.cta.label}</a>
+          <div data-reveal><a className="order-button" href={loyalty.cta.href}>{loyalty.cta.label}</a></div>
         </div>
-        <div className="loyalty__stamps" aria-label={`Stamp card: ${loyalty.filled} of ${loyalty.stamps}`}>
-          {Array.from({ length: loyalty.stamps }, (_, i) => {
-            const last = i === loyalty.stamps - 1
-            const filled = i < loyalty.filled
-            return (
-              <span key={i} className={`stamp ${filled ? 'stamp--on' : ''} ${last ? 'stamp--free' : ''}`} data-stamp>
-                {last ? 'Free' : filled ? <img src={assets.logoFlame} alt="" width={100} height={71} loading="lazy" decoding="async" /> : i + 1}
-              </span>
-            )
-          })}
+        <div className="club__card" data-club-card aria-label={`Stamp card: ${loyalty.filled} of ${loyalty.stamps} stamps`}>
+          <div className="club__card-head">
+            <img src={assets.logo} alt="" width={514} height={236} loading="lazy" decoding="async" />
+            <span>{loyalty.ghost}</span>
+          </div>
+          <div className="club__stamps">
+            {Array.from({ length: loyalty.stamps }, (_, i) => {
+              const last = i === loyalty.stamps - 1
+              const lit = i < loyalty.filled
+              return (
+                <span key={i} className={`coal ${lit ? 'coal--lit' : ''} ${last ? 'coal--free' : ''}`}>
+                  {last ? <b>Free</b> : lit ? <img src={assets.logoFlame} alt="" width={100} height={71} loading="lazy" decoding="async" data-coal-flame /> : <i>{i + 1}</i>}
+                </span>
+              )
+            })}
+          </div>
+          <p className="club__card-foot">{loyalty.filled} / {loyalty.stamps - 1} · next plate {loyalty.stamps - loyalty.filled - 1 > 0 ? `in ${loyalty.stamps - loyalty.filled - 1}` : 'is free'}</p>
         </div>
       </div>
     </section>
@@ -198,12 +206,15 @@ export function useSectionMotion(scope: React.RefObject<HTMLElement | null>) {
           dots.forEach((d, k) => d.addEventListener('click', () => show(k)))
           ScrollTrigger.create({ trigger: sec, start: 'top 75%', once: true, onEnter: () => show(0) })
         })
-        // loyalty card straightens as it scrolls in, stamps pop in
-        const card = root.querySelector<HTMLElement>('[data-loyalty-card]')
-        if (card) {
-          gsap.fromTo(card, { rotation: -7, y: 60 }, { rotation: -2, y: 0, ease: 'none', scrollTrigger: { trigger: card, start: 'top bottom', end: 'center center', scrub: 0.6 } })
-          gsap.from(card.querySelectorAll('[data-stamp]'), { scale: 0, autoAlpha: 0, stagger: 0.06, duration: 0.5, ease: 'back.out(2)', scrollTrigger: { trigger: card, start: 'top 70%', once: true } })
-        }
+        // loyalty: card rises in, then the coals ignite one by one
+        root.querySelectorAll<HTMLElement>('[data-club]').forEach((sec) => {
+          const card = sec.querySelector<HTMLElement>('[data-club-card]')
+          if (!card) return
+          gsap.fromTo(card, { y: 80, rotation: 3 }, { y: 0, rotation: -1.5, ease: 'none', scrollTrigger: { trigger: card, start: 'top bottom', end: 'center center', scrub: 0.6 } })
+          const flames = card.querySelectorAll('[data-coal-flame]')
+          gsap.set(flames, { scale: 0, autoAlpha: 0, transformOrigin: '50% 90%' })
+          gsap.to(flames, { scale: 1, autoAlpha: 1, stagger: 0.14, duration: 0.7, ease: 'back.out(2.2)', scrollTrigger: { trigger: card, start: 'top 70%', once: true } })
+        })
         // catering background parallax
         root.querySelectorAll<HTMLElement>('[data-parallax]').forEach((img) => {
           gsap.fromTo(img, { yPercent: -10 }, { yPercent: 10, ease: 'none', scrollTrigger: { trigger: img.parentElement, start: 'top bottom', end: 'bottom top', scrub: 0.6 } })
