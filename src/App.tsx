@@ -5,6 +5,7 @@ import { loadOwnerState } from './lib/owner-store'
 import type { SceneModel } from './lib/scene-model'
 import { useReveal } from './hooks/useReveal'
 import { GrillToPlateScene } from './components/GrillToPlateScene'
+import { MorePlates } from './components/MorePlates'
 import { Closing } from './components/Closing'
 
 const OwnerEditor = lazy(() => import('./components/OwnerEditor'))
@@ -39,7 +40,9 @@ function Site({ model }: { model: SceneModel }) {
     })
     const refresh = () => ScrollTrigger.refresh()
     window.addEventListener('load', refresh)
-    const pending = [...document.images].filter((img) => !img.complete)
+    // Images whose box is sized by CSS (data-fixed-size) can't move anything when they load,
+    // so they don't trigger a refresh (a refresh mid-scroll is a visible hitch).
+    const pending = [...document.images].filter((img) => !img.complete && !img.hasAttribute('data-fixed-size'))
     pending.forEach((img) => img.addEventListener('load', refresh, { once: true }))
 
     // Same-page anchors scroll smoothly through Lenis (#menu is handled by the scene).
@@ -66,6 +69,7 @@ function Site({ model }: { model: SceneModel }) {
   return (
     <main ref={root}>
       <GrillToPlateScene model={model} />
+      <MorePlates />
       <Closing />
     </main>
   )

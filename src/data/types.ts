@@ -51,6 +51,7 @@ export interface Motion {
   curviness: number
   stagger: number
   lidAngle: number
+  fire: { pause: number; off: number }
   timeline: Record<'headline' | 'open' | 'lift' | 'flight' | 'settle' | 'slide' | 'spread' | 'handoff', Window>
   eases: Record<'lift' | 'flight' | 'settle' | 'slide' | 'spread', string>
 }

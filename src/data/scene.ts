@@ -2,6 +2,8 @@ import type { DishId, GrillItem, Motion } from './types'
 
 export const assets = {
   grill: 'assets/hero/grill-hero.webp',
+  /** The grill with the fire baked in at its average glow. Shown while the scene moves, in place of the live fire. */
+  grillLit: 'assets/hero/grill-hero-lit.webp',
   flames: 'assets/hero/flames.webp',
   logo: 'assets/brand/logo.webp',
 } as const
@@ -33,6 +35,24 @@ export const dishes: { id: DishId; name: string; price?: string; description?: s
   { id: 'kebab', name: 'Kebab' },
 ]
 
+/**
+ * More plates, shown in rows under the three animated ones. Nothing flies onto these.
+ * PLACEHOLDERS: every entry is the shish tawook plate until the real dishes arrive.
+ * To add a dish: put a transparent plate photo in public/assets/plates/ and add a line here
+ * (aspect = image width / height). Add or remove lines freely; rows fill three at a time.
+ */
+export const morePlates: { name: string; image: string; aspect: number; price?: string }[] = [
+  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962 },
+  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962 },
+  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962 },
+  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962 },
+  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962 },
+  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962 },
+  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962 },
+  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962 },
+  { name: 'Shish Tawook', image: 'assets/plates/tawook-reference.webp', aspect: 1100 / 962 },
+]
+
 /** Back-to-front order of everything on the grill. */
 export const grillItems: GrillItem[] = [
   { id: 'basket-base', kind: 'prop', image: 'assets/grill/basket-base.webp' },
@@ -54,6 +74,8 @@ export const motion: Motion = {
   curviness: 0.6,
   stagger: 0.008,
   lidAngle: 74,
+  /** Scene progress at which the fire holds still (camera starts moving) and switches off (grill off screen). */
+  fire: { pause: 0.01, off: 0.5 },
   timeline: {
     headline: [0, 0.1],
     open: [0, 0.1],

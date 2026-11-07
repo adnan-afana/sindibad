@@ -16,6 +16,13 @@
   --color-line-dark: color-mix(in srgb, var(--color-cream) 14%, transparent);
   --color-line-light: color-mix(in srgb, var(--color-gray) 22%, var(--color-cream));
 
+  /* Warm dark surfaces (from the Grillify-chat version): a lifted charcoal, not near-black,
+     so the black plates and food photos still separate from the page. */
+  --color-page: #26221f;
+  --color-surface: #302b27;
+  --color-deep: #1f1c19;
+  --color-muted: #b5aba2;
+
   --font-sans: "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-condensed: "Oswald Variable", "Arial Narrow", "Roboto Condensed", sans-serif;
   --font-serif: "Cormorant Garamond Variable", "Times New Roman", serif;
@@ -51,6 +58,10 @@
   --order-active: var(--color-red-active);
   --hero-black: var(--color-charcoal);
   --char: var(--color-charcoal);
+  --page: var(--color-page);
+  --surface: var(--color-surface);
+  --deep: var(--color-deep);
+  --muted: var(--color-muted);
   color-scheme: dark;
 }
 
@@ -72,7 +83,7 @@
 }
 html,
 body {
-  background: var(--char);
+  background: var(--page);
   color: var(--ink);
   font-family: var(--sans);
   -webkit-font-smoothing: antialiased;
@@ -134,8 +145,14 @@ h3 {
 /* Flame layer: (flames photo × moving light sweep), screen-blended onto the grill.
    Equivalent to the previous animated mask-position, but the sweep moves with transform. */
 .grill-stage__flames {
+  /* Only the band that holds flames (photo rows 18%–74%); the img is offset to match. */
+  --band-top: 18;
+  --band-h: 56;
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: calc(var(--band-top) * 1%);
+  height: calc(var(--band-h) * 1%);
   overflow: hidden;
   mix-blend-mode: screen;
   opacity: 0.38;
@@ -146,9 +163,10 @@ h3 {
 .grill-stage__flames img {
   width: 100%;
   max-width: none;
-  height: 100%;
+  height: calc(100% * 100 / var(--band-h));
   position: absolute;
-  inset: 0;
+  left: 0;
+  top: calc(-100% * var(--band-top) / var(--band-h));
 }
 .flame-sweep {
   position: absolute;
@@ -169,7 +187,7 @@ h3 {
 }
 .grill-stage__flames--lick,
 .grill-stage__flames--dance {
-  transform-origin: 50% 68%;
+  transform-origin: 50% 89.2857%;
   will-change: transform, opacity;
 }
 .grill-stage__flames--lick {
@@ -231,15 +249,15 @@ h3 {
   }
   35% {
     opacity: 0.42;
-    transform: translate(0.15%, -0.9%) scale(1.01, 1.06);
+    transform: translate(0.15%, -1.607%) scale(1.01, 1.06);
   }
   60% {
     opacity: 0.22;
-    transform: translate(-0.2%, -2.6%) scale(0.995, 1.2);
+    transform: translate(-0.2%, -4.643%) scale(0.995, 1.2);
   }
   to {
     opacity: 0;
-    transform: translateY(-3.6%) scaleY(1.28);
+    transform: translateY(-6.429%) scaleY(1.28);
   }
 }
 @keyframes flame-dance {
@@ -249,15 +267,15 @@ h3 {
   }
   30% {
     opacity: 0.32;
-    transform: translate(-0.25%, -0.6%) scale(1.005, 1.05) skew(-1.2deg);
+    transform: translate(-0.25%, -1.071%) scale(1.005, 1.05) skew(-1.2deg);
   }
   65% {
     opacity: 0.12;
-    transform: translate(0.25%, -1.2%) scaleY(1.08) skew(1deg);
+    transform: translate(0.25%, -2.143%) scaleY(1.08) skew(1deg);
   }
   to {
     opacity: 0.05;
-    transform: translateY(-1.5%) scaleY(1.1) skew(0);
+    transform: translateY(-2.679%) scaleY(1.1) skew(0);
   }
 }
 .flame-tongues {
@@ -688,16 +706,15 @@ h3 {
   transform-origin: 50%;
 }
 .plates {
-  --sb-focus: var(--sb-red);
-  color: var(--sb-charcoal);
+  color: var(--sb-cream);
   background:
-    linear-gradient(180deg, var(--sb-charcoal) 0%, rgba(27, 25, 22, 0) 18%),
+    linear-gradient(180deg, var(--sb-charcoal) 0%, rgba(27, 25, 22, 0) 22%),
     radial-gradient(
-      85% 60% at 50% 42%,
-      color-mix(in srgb, var(--sb-ember) 12%, transparent),
+      85% 60% at 50% 46%,
+      color-mix(in srgb, var(--sb-ember) 7%, transparent),
       transparent 72%
     ),
-    var(--sb-cream);
+    var(--page);
   flex-direction: column;
   justify-content: center;
   min-height: 100svh;
@@ -742,21 +759,21 @@ h3 {
   font-family: var(--condensed);
   letter-spacing: 0.01em;
   text-transform: uppercase;
-  color: var(--sb-charcoal);
+  color: var(--sb-cream);
   font-size: clamp(1.5rem, 2.4vw, 2.6rem);
   font-weight: 700;
   line-height: 1;
 }
 .plate-card__price {
   font-family: var(--condensed);
-  color: var(--sb-red);
+  color: var(--sb-ember);
   margin: 0;
   font-size: clamp(1.1rem, 1.5vw, 1.5rem);
   font-weight: 600;
 }
 .plate-card__description {
   max-width: 26rem;
-  color: var(--sb-gray);
+  color: var(--muted);
   margin: 0;
   line-height: 1.5;
 }
@@ -781,7 +798,7 @@ h3 {
   opacity: 0;
   background: radial-gradient(
     closest-side,
-    color-mix(in srgb, var(--sb-gray) 20%, transparent),
+    color-mix(in srgb, var(--sb-cream) 14%, transparent),
     transparent
   );
   border-radius: 50%;
@@ -823,6 +840,25 @@ h3 {
     transform: translate(-8%, -95%) scale(1.4) rotate(-4deg);
   }
 }
+.more-plates {
+  /* transparent: the plates section's warm glow shows through where the rows overlap it */
+  background: transparent;
+  /* pulled up into the empty space under the animated plates (set by the scene, in px) */
+  margin-top: calc(-1 * var(--plates-tail, 0px));
+  padding-block: 0 clamp(4rem, 12vh, 8rem);
+  padding-inline: max(16px, 3.1vw);
+  position: relative;
+}
+.more-plates .plates__grid {
+  row-gap: clamp(2.5rem, 7vh, 5rem);
+}
+.plate-card__plate--static img {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
 .closing {
   z-index: 1;
   text-align: center;
@@ -833,7 +869,7 @@ h3 {
       color-mix(in srgb, var(--sb-ember) 16%, transparent),
       transparent 70%
     ),
-    var(--sb-charcoal);
+    var(--deep);
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
@@ -883,6 +919,12 @@ h3 {
   .plates__grid {
     gap: 6px;
   }
+  .more-plates {
+    padding-inline: 10px;
+  }
+  .more-plates .plates__grid {
+    row-gap: 2rem;
+  }
   .plate-card__plate {
     width: 100%;
   }
@@ -894,6 +936,33 @@ h3 {
     padding: 0 0.7em;
     font-size: 12px;
   }
+}
+/* While the scene moves, the live fire (several blended layers) is replaced by one still photo
+   of the lit grill, so every frame goes to the food in flight. */
+.grill-stage__lit {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+.journey[data-fire] .grill-stage__image,
+.journey[data-fire] .grill-stage__flames,
+.journey[data-fire] .flame-tongues,
+.journey[data-fire] .embers {
+  visibility: hidden;
+}
+.journey[data-fire] .grill-stage__flames,
+.journey[data-fire] .flame-sweep,
+.journey[data-fire] .flame-tongues span,
+.journey[data-fire] .embers span {
+  animation-play-state: paused;
+}
+.journey[data-fire="off"] .grill-stage__flames,
+.journey[data-fire="off"] .flame-sweep,
+.journey[data-fire="off"] .flame-tongues span,
+.journey[data-fire="off"] .embers span {
+  animation: none;
 }
 @media (prefers-reduced-motion: reduce) {
   .grill-stage__flames,

@@ -19,7 +19,7 @@ import { SiteHeader } from './SiteHeader'
 
 function FoodImage({ model, mover, piece, eager }: { model: SceneModel; mover: Mover; piece: Piece; eager?: boolean }) {
   return (
-    <img src={piece.src} alt="" draggable={false} decoding="async" loading={eager ? 'eager' : 'lazy'}
+    <img src={piece.src} alt="" draggable={false} decoding="async" loading={eager ? 'eager' : 'lazy'} data-fixed-size
       style={{ transform: foodTransform(model, mover.dish) }} />
   )
 }
@@ -29,6 +29,9 @@ function Hero() {
     <section className="hero" id="top" aria-labelledby="hero-title">
       <div className="absolute inset-0">
         <div className="grill-stage">
+          {/* the still, lit grill sits underneath the live one, ready for the swap while scrolling */}
+          <img className="grill-stage__lit" src={assets.grillLit} alt="" width={imageSize.grill[0]} height={imageSize.grill[1]}
+            draggable={false} decoding="async" data-fixed-size />
           <img className="grill-stage__image" src={assets.grill} alt="" width={imageSize.grill[0]} height={imageSize.grill[1]}
             draggable={false} decoding="async" fetchPriority="high" data-hero-image />
           <FireEffects />
@@ -61,7 +64,7 @@ function PlateCard({ model, dish }: { model: SceneModel; dish: (typeof dishes)[n
     <article className="flex min-w-0 flex-col items-center text-center" aria-labelledby={`dish-${dish.id}`}>
       <div className="plate-card__plate" data-plate={dish.id} style={{ aspectRatio: `${plate.aspect}` }}>
         <div className="absolute inset-0 will-change-transform" data-plate-visual={dish.id}>
-          <img className="absolute inset-0 size-full object-contain" src={plateBase(model, dish.id)} alt="" width={w} height={h} draggable={false} decoding="async"
+          <img className="absolute inset-0 size-full object-contain" src={plateBase(model, dish.id)} alt="" width={w} height={h} draggable={false} decoding="async" data-fixed-size
             style={{ transform: baseTransform(model, dish.id) }} />
           <div className="absolute inset-0 opacity-0" data-landed={dish.id}>
             {moversFor(dish.id).map(([id, mover]) =>
@@ -198,9 +201,23 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
   // ---- measurement (on refresh only; offsetLeft/offsetTop so transforms never leak in) ----
   const vp = { w: window.innerWidth, h: window.innerHeight }
   let travel = 0 // how far the camera moves the track up, px
+  // The animated plates sit centred in a full-screen section, which leaves empty space under them.
+  // The rows of more plates that follow are pulled up into that space (--plates-tail), so the
+  // gap under the animated row matches the gap between the other rows.
+  const platesSection = scope.querySelector<HTMLElement>('.plates')
+  const platesGrid = platesSection?.querySelector<HTMLElement>('.plates__grid')
+  const measureTail = () => {
+    const more = document.querySelector<HTMLElement>('.more-plates .plates__grid')
+    if (!platesSection || !platesGrid || !more) return
+    const tail = platesSection.offsetHeight - (platesGrid.offsetTop + platesGrid.offsetHeight)
+    const gap = parseFloat(getComputedStyle(more).rowGap) || 0
+    document.documentElement.style.setProperty('--plates-tail', `${Math.max(0, Math.round(tail - gap))}px`)
+  }
+
   const measure = () => {
     vp.w = window.innerWidth
     vp.h = window.innerHeight
+    measureTail()
     travel = Math.max(0, track.offsetHeight - vp.h)
     for (const m of movers) {
       m.slot = offsetRect(m.slotEl, journey)
@@ -266,8 +283,21 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
     ScrollTrigger.addEventListener('refreshInit', measure)
     measure()
 
-    // Pin (no animation of its own).
-    pin = ScrollTrigger.create({ id: 'journey', trigger: journey, start: 'top top', end, pin: true, anticipatePin: 1, invalidateOnRefresh: true })
+    // Pin (no animation of its own). It also rests the fire: the live flame layers are the most
+    // expensive thing on the page to draw, so once the scene starts moving they are swapped for a
+    // still photo of the lit grill (assets.grillLit), and switched off entirely when the grill has
+    // left the screen. Scrolling back to the top brings the live fire back.
+    const fireState = (progress: number) => {
+      const next = progress >= motion.fire.off ? 'off' : progress >= motion.fire.pause ? 'paused' : ''
+      if ((journey.dataset.fire ?? '') === next) return
+      if (next) journey.dataset.fire = next
+      else delete journey.dataset.fire
+    }
+    pin = ScrollTrigger.create({
+      id: 'journey', trigger: journey, start: 'top top', end, pin: true, anticipatePin: 1, invalidateOnRefresh: true,
+      onUpdate: (self) => fireState(self.progress),
+      onRefresh: (self) => fireState(self.progress),
+    })
 
     const seal = (t: gsap.core.Timeline) => t.set({}, {}, 1) // every timeline spans exactly 0–1
 
@@ -353,6 +383,7 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
       document.removeEventListener('click', onClick)
       pin = null
       delete journey.dataset.mode
+      delete journey.dataset.fire
     }
   })
   }, scope)
@@ -360,6 +391,7 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
   return () => {
     mm?.revert()
     ctx.revert()
+    document.documentElement.style.removeProperty('--plates-tail')
   }
 }
 
