@@ -6,6 +6,8 @@ export const assets = {
   /** smoke lifted out of the grill photo (top 22.5% of it), animated on its own */
   smoke: 'assets/hero/smoke.webp',
   logo: 'assets/brand/logo.webp',
+  /** the flame from the logo, used on the price */
+  logoFlame: 'assets/brand/logo-flame.webp',
 } as const
 
 /** Intrinsic image sizes, used for width/height attributes (prevents layout shift). */
@@ -24,6 +26,8 @@ export const hero = {
     { label: 'Contact', href: '#contact' },
   ],
   order: { label: 'Order Now', href: '#menu' },
+  /** friendlier call-to-action on each dish card */
+  cardCta: 'Enjoy it now',
 }
 
 export const platesSection = { title: 'Our plates' }
