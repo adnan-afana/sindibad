@@ -1373,57 +1373,23 @@ h3 {
   100% { opacity: 0; transform: translate(-1.2%, -38%) scale(1.06, 1.3) skewX(-2deg); }
 }
 
-/* Price on the plate, borrowed from the logo: fire-textured numerals, the logo's flame on top
-   and the logo's cleaver underline. */
-.price-mark {
+/* Price on the plate: deep-red pill overlapping the rim */
+.price-pill {
   position: absolute;
   z-index: 2;
-  top: -7%;
-  right: -5%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transform: rotate(-7deg);
-  pointer-events: none;
-  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.65));
-}
-.price-mark__flame {
-  width: 0.78em;
-  height: auto;
-  margin-bottom: -0.14em;
-  transform-origin: 50% 100%;
-  animation: price-flame 0.8s ease-in-out infinite alternate;
-  font-size: clamp(36px, 3.6vw, 62px);
-}
-.price-mark__num {
-  display: inline-flex;
-  align-items: flex-start;
-  font-family: var(--condensed);
+  top: 1%;
+  right: 0;
+  padding: 0.32em 0.7em 0.36em;
+  border-radius: 999px;
+  background: var(--sb-red);
+  color: var(--sb-white);
+  font-family: var(--sans);
   font-weight: 700;
-  line-height: 0.82;
-  letter-spacing: -0.01em;
-  font-size: clamp(36px, 3.6vw, 62px);
-  color: transparent;
-  /* the logo's fire lettering: hot orange core fading to deep red */
-  background: linear-gradient(180deg, #ffc56b 0%, #f58a2e 34%, #e2521f 62%, #9c2418 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-stroke: 0.6px rgba(60, 14, 8, 0.55);
-}
-.price-mark__num small {
-  font-size: 0.46em;
+  font-size: clamp(16px, 1.75vw, 30px);
   line-height: 1;
-  margin: 0.08em 0 0 0.05em;
-}
-.price-mark__knife {
-  width: 1.9em;
-  height: auto;
-  margin-top: 0.12em;
-  font-size: clamp(36px, 3.6vw, 62px);
-}
-@keyframes price-flame {
-  from { transform: scale(0.94, 0.9) skewX(-3deg); }
-  to { transform: scale(1.04, 1.08) skewX(3deg); }
+  letter-spacing: -0.01em;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  pointer-events: none;
 }
 /* Whole card is the link to ordering */
 .plate-card {
@@ -1512,10 +1478,10 @@ h3 {
 }
 .site-header__logo:hover .logo-fire span,
 .site-header__logo:focus-visible .logo-fire span {
-  animation: logo-fire 4.2s linear infinite;
+  animation: logo-fire 5.2s linear infinite;
 }
 .site-header__logo:hover img {
-  animation: logo-flicker 2.4s ease-in-out infinite;
+  animation: logo-flicker 3s ease-in-out infinite;
 }
 @keyframes logo-fire {
   from { transform: translateY(0); }
@@ -1528,14 +1494,10 @@ h3 {
   80% { opacity: 0.96; }
 }
 @media (width <= 767px) {
-  .price-mark {
-    top: -12%;
-    right: -9%;
-  }
-  .price-mark__flame,
-  .price-mark__num,
-  .price-mark__knife {
-    font-size: 24px;
+  .price-pill {
+    font-size: 11px;
+    top: -4%;
+    right: -6%;
   }
   .plate-card__cta {
     font-size: 11px;
@@ -1544,9 +1506,6 @@ h3 {
 @media (prefers-reduced-motion: reduce) {
   .smoke-photo img + img {
     display: none;
-  }
-  .price-mark__flame {
-    animation: none;
   }
   .smoke-photo img,
   .logo-fire span,
