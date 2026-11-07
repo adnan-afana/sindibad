@@ -1516,3 +1516,62 @@ h3 {
   }
 }
 }
+
+@layer components {
+/* Extra dish rows: same look as the plates section, continuing seamlessly below it. */
+.plates--more {
+  min-height: 0;
+  padding-block: 0 clamp(3rem, 8vh, 6rem);
+  background: var(--sb-charcoal);
+}
+.steam--on {
+  opacity: 1;
+}
+/* Desktop/tablet: extra rows sit in their own section below the scene.
+   Phones: both rows fit on one screen, so the extra row lives inside the plates section. */
+.plates__grid--more-inline {
+  display: none;
+}
+@media (width <= 767px) {
+  .plates__grid--more-inline {
+    display: grid;
+    margin-top: 28px;
+  }
+  .plates--more {
+    display: none;
+  }
+}
+
+/* Dish card hover: the plate lifts and turns slightly, with a warm glow underneath. */
+.plate-card__hover {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.plate-card__plate::before {
+  content: "";
+  position: absolute;
+  inset: 6% 4% -6%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--sb-ember) 45%, transparent), transparent 75%);
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.5s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+@media (hover: hover) {
+  .plate-card:hover .plate-card__hover {
+    transform: translateY(-3%) rotate(-4deg) scale(1.04);
+  }
+  .plate-card:hover .plate-card__plate::before {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .plate-card__hover,
+  .plate-card__plate::before {
+    transition: none;
+  }
+}
+}
