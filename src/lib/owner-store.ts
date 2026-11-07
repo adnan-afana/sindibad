@@ -33,7 +33,9 @@ async function run<T>(mode: IDBTransactionMode, fn: (s: IDBObjectStore) => IDBRe
 
 export async function loadOwnerState(): Promise<OwnerState> {
   try {
-    const v = await run<OwnerState | undefined>('readonly', (s) => s.get('state'))
+    // Some in-app/embedded browsers never answer IndexedDB requests: give up quickly.
+    const timeout = new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 700))
+    const v = await Promise.race([run<OwnerState | undefined>('readonly', (s) => s.get('state')), timeout])
     return v ? { ...emptyOwnerState(), ...v } : emptyOwnerState()
   } catch {
     return emptyOwnerState()
