@@ -19,9 +19,9 @@ export const testimonials = {
 export const loyalty = {
   title: 'Join our loyalty program',
   ghost: 'Sindibad rewards',
-  headline: '10th plate on us',
-  copy: 'Collect a stamp with every plate. Your tenth one is on the house.',
-  perks: ['A stamp with every plate', 'Birthday treat', 'Members-only offers'],
+  headline: 'Your 10th plate is on us.',
+  copy: 'Every plate lights up a coal on your card. Light nine and the tenth one is on the house.',
+  perks: ['A stamp with every plate', 'A treat on your birthday', 'Members-only offers'],
   stamps: 10,
   filled: 7,
   cta: { label: 'Join the club', href: '#loyalty' }, // PLACEHOLDER link
