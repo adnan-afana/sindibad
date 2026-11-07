@@ -25,6 +25,7 @@ export function FireEffects() {
       <div className="smoke-photo" aria-hidden="true">
         <img src={assets.smoke} alt="" draggable={false} decoding="async" />
         <img src={assets.smoke} alt="" draggable={false} decoding="async" />
+        <img src={assets.smoke} alt="" draggable={false} decoding="async" />
       </div>
       <div className="smoke" aria-hidden="true">
         {smoke.map((p, i) => (
