@@ -270,6 +270,8 @@ h3 {
   position: absolute;
   top: 38%;
   left: 9%;
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 45%, #000 80%, transparent 100%);
+  mask-image: linear-gradient(to top, transparent 0%, #000 45%, #000 80%, transparent 100%);
   right: 7%;
 }
 .flame-tongues span {
@@ -321,6 +323,8 @@ h3 {
 .embers {
   pointer-events: none;
   overflow: hidden;
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 40%, #000 80%, transparent 100%);
+  mask-image: linear-gradient(to top, transparent 0%, #000 40%, #000 80%, transparent 100%);
   height: 30%;
   position: absolute;
   top: 38%;
@@ -380,9 +384,9 @@ h3 {
       rgba(27, 25, 22, 0) 22%
     ),
     linear-gradient(
-      rgba(27, 25, 22, 0) 70%,
-      rgba(27, 25, 22, 0.45) 86%,
-      rgba(27, 25, 22, 0.85) 100%
+      rgba(27, 25, 22, 0) 66%,
+      rgba(27, 25, 22, 0.55) 84%,
+      rgba(27, 25, 22, 1) 100%
     );
   position: absolute;
   inset: 0;
@@ -469,15 +473,65 @@ h3 {
     transform 0.1s;
   display: inline-flex;
   color: var(--sb-white);
-  box-shadow: inset 0 -2px 0 transparent;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+/* Hover: small flames rise along the bottom of the button (transform/opacity only). */
+.order-button::before,
+.order-button::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -20%;
+  width: 140%;
+  bottom: 0;
+  height: 75%;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  transform: translateY(105%) scaleY(0.6);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.33, 1, 0.68, 1), opacity 0.25s;
+  background:
+    radial-gradient(ellipse 7% 70% at 8% 100%, #ffd98a 0%, var(--sb-ember) 45%, transparent 72%),
+    radial-gradient(ellipse 9% 95% at 22% 100%, #ffe7a8 0%, var(--sb-ember) 40%, transparent 70%),
+    radial-gradient(ellipse 6% 60% at 36% 100%, #ffd98a 0%, var(--sb-ember) 45%, transparent 72%),
+    radial-gradient(ellipse 10% 100% at 52% 100%, #ffe7a8 0%, var(--sb-ember) 40%, transparent 70%),
+    radial-gradient(ellipse 7% 70% at 67% 100%, #ffd98a 0%, var(--sb-ember) 45%, transparent 72%),
+    radial-gradient(ellipse 9% 90% at 82% 100%, #ffe7a8 0%, var(--sb-ember) 40%, transparent 70%),
+    radial-gradient(ellipse 6% 55% at 95% 100%, #ffd98a 0%, var(--sb-ember) 45%, transparent 72%);
+}
+.order-button::after {
+  height: 55%;
+  left: -30%;
+  filter: blur(1px);
 }
 .order-button:hover {
   background: var(--order-hover);
-  box-shadow: inset 0 -2px 0 var(--sb-ember);
+}
+.order-button:hover::before,
+.order-button:focus-visible::before {
+  opacity: 0.9;
+  transform: translateY(0) scaleY(1);
+  animation: btn-flame 0.9s ease-in-out infinite alternate;
+}
+.order-button:hover::after,
+.order-button:focus-visible::after {
+  opacity: 0.7;
+  transform: translateY(0) scaleY(1);
+  animation: btn-flame-2 0.7s ease-in-out infinite alternate;
+}
+@keyframes btn-flame {
+  0% { transform: translateX(0) scaleY(0.85); }
+  50% { transform: translateX(-3%) scaleY(1.1); }
+  100% { transform: translateX(-6%) scaleY(0.9); }
+}
+@keyframes btn-flame-2 {
+  0% { transform: translateX(-4%) scaleY(1.05); }
+  100% { transform: translateX(4%) scaleY(0.8); }
 }
 .order-button:active {
   background: var(--order-active);
-  box-shadow: none;
   transform: translateY(1px);
 }
 .order-button:disabled,
@@ -622,7 +676,9 @@ h3 {
 @media (width<=767px) {
   .grill-stage {
     --stage-w: 120vw;
-    top: calc(46cqh - var(--stage-w) * 0.2813995);
+    top: calc(46cqh - var(--stage-w) * 0.2813995);    /* phones: the photo is shorter than the screen, so fade its top/bottom edges into the background */
+    -webkit-mask-image: linear-gradient(transparent 0%, #000 9%, #000 86%, transparent 100%);
+    mask-image: linear-gradient(transparent 0%, #000 9%, #000 86%, transparent 100%);
   }
   .hero__shade {
     background:
@@ -634,7 +690,7 @@ h3 {
       linear-gradient(
         rgba(27, 25, 22, 0) 58%,
         rgba(27, 25, 22, 0.6) 76%,
-        rgba(27, 25, 22, 0.95) 100%
+        rgba(27, 25, 22, 1) 100%
       );
   }
   .site-header {
@@ -894,7 +950,7 @@ h3 {
   opacity: 0;
   background: radial-gradient(
     closest-side,
-    rgba(255, 255, 255, 0.22),
+    rgba(255, 255, 255, 0.3),
     transparent
   );
   border-radius: 50%;
@@ -939,7 +995,6 @@ h3 {
 .closing {
   z-index: 1;
   text-align: center;
-  border-top: 1px solid var(--line);
   background:
     radial-gradient(
       70% 90% at 50% 100%,
@@ -1308,4 +1363,196 @@ h3 {
   }
 }
 
+}
+
+@layer components {
+/* Photo smoke, lifted out of the grill photo, drifting upward in two cross-faded copies. */
+.smoke-photo {
+  opacity: 0.74; /* matches the grill photo's brightness(0.74) */
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 22.53%;
+  pointer-events: none;
+}
+.smoke-photo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  transform-origin: 50% 100%;
+  mix-blend-mode: plus-lighter; /* the smoke was lifted additively from the photo */
+  will-change: transform, opacity;
+  animation: smoke-drift 10s linear infinite;
+}
+.smoke-photo img + img {
+  animation-delay: -5s;
+}
+@keyframes smoke-drift {
+  0% { opacity: 0; transform: translate(0, 6%) scale(1, 0.96); }
+  20% { opacity: 1; }
+  60% { opacity: 0.9; transform: translate(0.8%, -8%) scale(1.02, 1.08); }
+  100% { opacity: 0; transform: translate(-0.6%, -22%) scale(1.04, 1.2); }
+}
+
+/* Price tag sitting on the plate */
+.price-tag {
+  position: absolute;
+  z-index: 2;
+  top: 4%;
+  right: 2%;
+  display: grid;
+  place-items: center;
+  width: clamp(54px, 5.6vw, 92px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--sb-charcoal);
+  border: 2px solid var(--sb-ember);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  color: var(--sb-white);
+  font-family: var(--condensed);
+  font-weight: 700;
+  font-size: clamp(14px, 1.4vw, 24px);
+  letter-spacing: 0.01em;
+  transform: rotate(-10deg);
+  pointer-events: none;
+}
+.price-tag::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  border: 1px dashed rgba(233, 139, 44, 0.55);
+}
+
+/* Whole card is the link to ordering */
+.plate-card {
+  position: relative;
+}
+.plate-card__link {
+  color: inherit;
+  text-decoration: none;
+}
+.plate-card__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: 12px;
+}
+.plate-card__link:focus-visible {
+  outline: none;
+}
+.plate-card__link:focus-visible::after {
+  outline: 2px solid var(--sb-ember);
+  outline-offset: 6px;
+}
+.plate-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-family: var(--condensed);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: clamp(13px, 1.05vw, 18px);
+  color: var(--sb-ember);
+  transition: color 0.2s;
+}
+.plate-card__cta svg {
+  width: 1em;
+  height: 1em;
+  transition: transform 0.25s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.plate-card:hover .plate-card__cta {
+  color: var(--sb-white);
+}
+.plate-card:hover .plate-card__cta svg {
+  transform: translateX(4px);
+}
+.plate-card:hover .plate-card__body h3 {
+  color: var(--sb-ember);
+}
+.plate-card__body h3 {
+  transition: color 0.2s;
+}
+
+/* Logo: on hover, fire moves inside the letters only (masked by the logo itself). */
+.site-header__logo {
+  position: relative;
+}
+.logo-fire {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+  mix-blend-mode: screen;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+.logo-fire span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 300%;
+  will-change: transform;
+  background:
+    repeating-linear-gradient(176deg, transparent 0 7%, rgba(255, 214, 120, 0.85) 9%, transparent 13%, rgba(233, 139, 44, 0.6) 16%, transparent 20%),
+    repeating-linear-gradient(184deg, transparent 0 11%, rgba(255, 236, 170, 0.7) 13%, transparent 17%);
+}
+.site-header__logo:hover .logo-fire,
+.site-header__logo:focus-visible .logo-fire {
+  opacity: 1;
+}
+.site-header__logo:hover .logo-fire span,
+.site-header__logo:focus-visible .logo-fire span {
+  animation: logo-fire 1.4s linear infinite;
+}
+.site-header__logo:hover img {
+  animation: logo-flicker 0.9s steps(1) infinite;
+}
+@keyframes logo-fire {
+  from { transform: translateY(0); }
+  to { transform: translateY(-33.333%); }
+}
+@keyframes logo-flicker {
+  0% { opacity: 1; }
+  30% { opacity: 0.94; }
+  55% { opacity: 1; }
+  80% { opacity: 0.96; }
+}
+@media (width <= 767px) {
+  .price-tag {
+    width: 40px;
+    font-size: 11px;
+    border-width: 1.5px;
+    top: 0;
+    right: -4%;
+  }
+  .price-tag::before {
+    inset: 2px;
+  }
+  .plate-card__cta {
+    font-size: 11px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .smoke-photo img + img {
+    display: none;
+  }
+  .smoke-photo img,
+  .logo-fire span,
+  .site-header__logo:hover img,
+  .order-button:hover::before,
+  .order-button:hover::after {
+    animation: none;
+  }
+}
 }
