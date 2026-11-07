@@ -4,17 +4,6 @@ import { assets, halal } from '../data/scene'
 import { catering, contact, loyalty, testimonials } from '../data/sections'
 import { hoursSummary } from '../lib/opening-hours'
 
-/** Big ghost word that drifts sideways behind a section (two copies → seamless loop). */
-function GhostMarquee({ text }: { text: string }) {
-  return (
-    <div className="ghost-marquee" aria-hidden="true">
-      <div className="ghost-marquee__track" data-marquee>
-        <span>{text}&nbsp;·&nbsp;</span><span>{text}&nbsp;·&nbsp;</span>
-      </div>
-    </div>
-  )
-}
-
 function Stars({ n }: { n: number }) {
   return (
     <span className="stars" aria-label={`${n} out of 5 stars`}>
@@ -25,23 +14,42 @@ function Stars({ n }: { n: number }) {
   )
 }
 
+/** Embers drifting up (same look as the grill's sparks). */
+const SPARKS = [8, 17, 26, 34, 43, 52, 61, 69, 78, 86, 93].map((x, i) => ({ x, delay: (i * 0.73) % 4, dur: 3.6 + ((i * 1.37) % 2.2) }))
+
 export function Testimonials() {
-  const cards = testimonials.items
+  const items = testimonials.items
   return (
-    <section className="section reviews" aria-labelledby="reviews-title">
-      <GhostMarquee text="Loved in Kingston" />
-      <h2 id="reviews-title" className="mega" data-split>{testimonials.title}</h2>
-      <p className="section__note">{testimonials.sampleNote}</p>
-      <div className="reviews__viewport" data-reviews>
-        <div className="reviews__track" data-reviews-track>
-          {[...cards, ...cards].map((r, i) => (
-            <figure key={i} className={`review ${i % 2 ? 'review--dark' : ''}`} aria-hidden={i >= cards.length || undefined}>
-              <Stars n={r.rating} />
-              <blockquote>“{r.quote}”</blockquote>
-              <figcaption><strong>{r.name}</strong><span>{r.meta}</span></figcaption>
+    <section className="section voices" aria-labelledby="voices-title" data-voices>
+      {/* the grill's smoke and sparks continue behind the reviews */}
+      <div className="voices__smoke" aria-hidden="true">
+        <img src={assets.smoke} alt="" loading="lazy" decoding="async" />
+        <img src={assets.smoke} alt="" loading="lazy" decoding="async" />
+      </div>
+      <div className="voices__sparks" aria-hidden="true">
+        {SPARKS.map((p, i) => <span key={i} style={{ left: `${p.x}%`, animationDelay: `${p.delay}s`, animationDuration: `${p.dur}s` }} />)}
+      </div>
+      <div className="voices__inner">
+        <h2 id="voices-title" className="voices__kicker">
+          <span className="pill"><Stars n={5} /> {testimonials.title}</span>
+        </h2>
+        <div className="voices__stage">
+          {items.map((r, i) => (
+            <figure key={i} className="voice" data-voice aria-hidden={i > 0 || undefined}>
+              <blockquote>
+                <span className="voice__mark" aria-hidden="true">“</span>
+                {r.quote}
+              </blockquote>
+              <figcaption>{r.name} · {r.meta}</figcaption>
             </figure>
           ))}
         </div>
+        <div className="voices__dots" role="tablist" aria-label="Reviews">
+          {items.map((_, i) => (
+            <button key={i} type="button" className="voices__dot" data-voice-dot={i} aria-label={`Review ${i + 1}`} />
+          ))}
+        </div>
+        <p className="section__note">{testimonials.sampleNote}</p>
       </div>
     </section>
   )
@@ -141,16 +149,27 @@ export function useSectionMotion(scope: React.RefObject<HTMLElement | null>) {
         root.querySelectorAll<HTMLElement>('[data-marquee]').forEach((el) => {
           gsap.to(el, { xPercent: -50, duration: 40, ease: 'none', repeat: -1 })
         })
-        // reviews marquee; slows down while hovered
-        root.querySelectorAll<HTMLElement>('[data-reviews]').forEach((vp) => {
-          const track = vp.querySelector<HTMLElement>('[data-reviews-track]')
-          if (!track) return
-          const loop = gsap.to(track, { xPercent: -50, duration: 45, ease: 'none', repeat: -1 })
-          const slow = () => gsap.to(loop, { timeScale: 0.15, duration: 0.6 })
-          const go = () => gsap.to(loop, { timeScale: 1, duration: 0.6 })
-          vp.addEventListener('pointerenter', slow)
-          vp.addEventListener('pointerleave', go)
-          gsap.from(track.children, { y: 40, autoAlpha: 0, stagger: 0.06, duration: 0.8, ease: 'power3.out', scrollTrigger: { trigger: vp, start: 'top 85%', once: true } })
+        // reviews: one quote at a time, lines rise in like the hero headline, auto-advancing
+        root.querySelectorAll<HTMLElement>('[data-voices]').forEach((sec) => {
+          const quotes = [...sec.querySelectorAll<HTMLElement>('[data-voice]')]
+          const dots = [...sec.querySelectorAll<HTMLElement>('[data-voice-dot]')]
+          if (!quotes.length) return
+          let current = 0
+          let timer: gsap.core.Tween | null = null
+          gsap.set(quotes, { autoAlpha: 0 })
+          const show = (n: number, first = false) => {
+            const prev = quotes[current]
+            current = (n + quotes.length) % quotes.length
+            const next = quotes[current]
+            dots.forEach((d, k) => d.classList.toggle('is-on', k === current))
+            quotes.forEach((q, k) => q.setAttribute('aria-hidden', String(k !== current)))
+            if (!first && prev !== next) gsap.to(prev, { autoAlpha: 0, y: -24, duration: 0.6, ease: 'power2.in' })
+            gsap.fromTo(next, { autoAlpha: 0, y: 36 }, { autoAlpha: 1, y: 0, duration: 0.9, delay: first ? 0 : 0.45, ease: 'power3.out' })
+            timer?.kill()
+            timer = gsap.delayedCall(6.5, () => show(current + 1))
+          }
+          dots.forEach((d, k) => d.addEventListener('click', () => show(k)))
+          ScrollTrigger.create({ trigger: sec, start: 'top 75%', once: true, onEnter: () => show(0, true) })
         })
         // loyalty card straightens as it scrolls in, stamps pop in
         const card = root.querySelector<HTMLElement>('[data-loyalty-card]')
