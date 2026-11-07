@@ -472,59 +472,59 @@ h3 {
   overflow: hidden;
   isolation: isolate;
 }
-/* Hover: real flames rise from the bottom of the button (texture drifts sideways + flickers;
-   transform/opacity only). The texture is two mirrored halves, so the drift loops seamlessly. */
+/* Hover: a slow streak of ember light drifts across the button (like the logo's fire),
+   and an arrow slides out next to the label. transform/opacity only. */
 .order-button > * ,
 .order-button {
   text-shadow: 0 1px 6px rgba(27, 25, 22, 0.55);
 }
-.order-button::before,
-.order-button::after {
+.order-button::before {
   content: "";
   position: absolute;
   z-index: -1;
-  left: 0;
+  top: 0;
   bottom: 0;
-  width: 200%;
+  left: 0;
+  width: 55%;
   pointer-events: none;
-  background: url("./assets/btn-fire.webp") 0 100% / 50% 100% repeat-x;
-  mix-blend-mode: screen;
-  transform-origin: 50% 100%;
+  background: linear-gradient(100deg, transparent, rgba(233, 139, 44, 0.5) 45%, rgba(246, 178, 92, 0.55) 50%, rgba(233, 139, 44, 0.5) 55%, transparent);
+  transform: translate3d(-120%, 0, 0) skewX(-20deg);
   opacity: 0;
-  transform: translate3d(0, 60%, 0);
-  transition: opacity 0.3s, transform 0.45s cubic-bezier(0.33, 1, 0.68, 1);
-}
-.order-button::before {
-  height: 115%;
 }
 .order-button::after {
-  height: 85%;
-  left: -35%;
-  transform: translate3d(0, 60%, 0) scaleX(-1);
+  content: "→";
+  display: inline-block;
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translate3d(-0.4em, 0, 0);
+  transition: width 0.6s cubic-bezier(0.33, 1, 0.68, 1), opacity 0.6s, transform 0.6s cubic-bezier(0.33, 1, 0.68, 1), margin 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.order-button {
+  transition: background-color 0.6s, transform 0.1s;
 }
 .order-button:hover {
-  background: var(--order-hover);
+  background: var(--order-active, #7a2619);
 }
 .order-button:hover::before,
 .order-button:focus-visible::before {
-  opacity: 0.95;
-  transform: translate3d(0, 0, 0);
-  animation: btn-fire-burn 0.5s ease-in-out infinite alternate;
+  animation: btn-shine 2.6s cubic-bezier(0.45, 0, 0.25, 1) infinite;
 }
 .order-button:hover::after,
 .order-button:focus-visible::after {
-  opacity: 0.6;
-  transform: translate3d(0, 0, 0) scaleX(-1);
-  animation: btn-fire-burn-2 0.37s ease-in-out infinite alternate;
+  width: 0.9em;
+  margin-left: 0.4em;
+  opacity: 1;
+  transform: none;
 }
-/* flames stay in place and just burn: height and brightness flicker */
-@keyframes btn-fire-burn {
-  from { transform: translate3d(0, 0, 0) scaleY(0.9); opacity: 0.85; }
-  to { transform: translate3d(0, 0, 0) scaleY(1.06); opacity: 1; }
+@keyframes btn-shine {
+  0% { transform: translate3d(-120%, 0, 0) skewX(-20deg); opacity: 0; }
+  12% { opacity: 1; }
+  70% { opacity: 1; }
+  85%, 100% { transform: translate3d(260%, 0, 0) skewX(-20deg); opacity: 0; }
 }
-@keyframes btn-fire-burn-2 {
-  from { transform: translate3d(0, 4%, 0) scale(-1, 1.05); opacity: 0.65; }
-  to { transform: translate3d(0, 4%, 0) scale(-1, 0.88); opacity: 0.45; }
+@media (prefers-reduced-motion: reduce) {
+  .order-button:hover::before { animation: none; }
 }
 .order-button:active {
   background: var(--order-active);
