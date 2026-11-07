@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { gsap, ScrollTrigger, FULL_MOTION } from './lib/gsap'
 import { getLenis, initSmoothScroll, scrollToTarget } from './lib/smooth-scroll'
-import { loadOwnerState } from './lib/owner-store'
+import { loadOwnerState, loadPublished } from './lib/owner-store'
 import type { SceneModel } from './lib/scene-model'
 import { useReveal } from './hooks/useReveal'
 import { GrillToPlateScene } from './components/GrillToPlateScene'
@@ -12,12 +12,19 @@ const OwnerEditor = lazy(() => import('./components/OwnerEditor'))
 const EMPTY_MODEL: SceneModel = {}
 const isOwnerMode = () => window.location.hash === '#owner'
 
-/** Owner edits (this browser only) are shown on the site when switched on in owner mode. */
+/** Published image edits (public/assets/owner) for everyone; this browser's owner edits on top when switched on. */
+// fetched right away, before the page's images queue up
+const publishedEdits = isOwnerMode() ? null : loadPublished()
 async function loadModel(): Promise<SceneModel> {
-  const state = await loadOwnerState()
-  if (!state.active) return {}
-  const images = Object.fromEntries(Object.entries(state.images).map(([k, b]) => [k, URL.createObjectURL(b)]))
-  return { local: { images, adjust: state.adjust } }
+  const [pub, state] = await Promise.all([publishedEdits ?? loadPublished(), loadOwnerState()])
+  const images = { ...pub.images }
+  const adjust = { ...pub.adjust }
+  if (state.active) {
+    for (const [k, b] of Object.entries(state.images)) images[k] = URL.createObjectURL(b)
+    Object.assign(adjust, state.adjust)
+  }
+  if (!Object.keys(images).length && !Object.keys(adjust).length) return {}
+  return { local: { images, adjust }, browserEdits: state.active && (Object.keys(state.images).length > 0 || Object.keys(state.adjust).length > 0) }
 }
 
 function Site({ model }: { model: SceneModel }) {
@@ -100,7 +107,7 @@ export default function App() {
   return (
     <>
       <Site model={model} />
-      {model.local && (
+      {model.browserEdits && (
         <p className="local-banner" role="status">
           Showing owner edits saved in this browser only. The published site is unchanged. <a href="#owner">Open owner mode</a>
         </p>
