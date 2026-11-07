@@ -84,27 +84,7 @@ function PlateCard({ model, dish }: { model: SceneModel; dish: (typeof dishes)[n
             <span key={`${id}-${i}`} className="anchor" data-end={`${id}:${i}`} style={{ left: `${p.final.x}%`, top: `${p.final.y}%` }} />
           )),
         )}
-        {dish.price && (
-          <span className="price-mark" aria-hidden="true">
-            <img className="price-mark__flame" src={assets.logoFlame} alt="" width={100} height={71} decoding="async" />
-            <span className="price-mark__num">
-              {dish.price.split('.')[0]}
-              {dish.price.includes('.') && <small>{dish.price.split('.')[1]}</small>}
-            </span>
-            {/* the cleaver from the logo */}
-            <svg className="price-mark__knife" viewBox="0 0 120 16" aria-hidden="true">
-              <defs>
-                <linearGradient id={`blade-${dish.id}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0" stopColor="#f1ece6" /><stop offset="0.55" stopColor="#a9a39d" /><stop offset="1" stopColor="#6b625c" />
-                </linearGradient>
-              </defs>
-              <path d="M2 6.5 Q2 4 5 4 L36 4.2 L36 11.8 L5 12 Q2 12 2 9.5 Z" fill="#2a2420" stroke="#6b625c" strokeWidth="0.8" />
-              <circle cx="10" cy="8" r="1.4" fill="#f1ece6" /><circle cx="18" cy="8" r="1.4" fill="#f1ece6" /><circle cx="26" cy="8" r="1.4" fill="#f1ece6" />
-              <path d="M36 3 L104 4.5 Q117 6 118 10 Q110 12.6 98 12.8 L36 13 Z" fill={`url(#blade-${dish.id})`} />
-              <path d="M38 12.2 L112 11.4" stroke="#8f2d20" strokeWidth="0.8" opacity="0.6" />
-            </svg>
-          </span>
-        )}
+        {dish.price && <span className="price-pill" aria-hidden="true">${dish.price}</span>}
         <span className="visually-hidden">{dish.name}, plated</span>
       </div>
       <div className="plate-card__body mt-[clamp(0.75rem,2vh,1.5rem)] flex flex-col items-center gap-[0.6rem]">
