@@ -8,7 +8,7 @@ import {
   baseTransform, dishes, food, foodTransform, grillItems, grillLayout, landedStyle, moversFor,
   pieceStyle, plateBase, scenePieces, slotStyle, srcSetFor, type SceneModel,
 } from '../lib/scene-model'
-import { assets, hero, imageSize, moreDishes, motion, platesSection } from '../data/scene'
+import { assets, hero, imageSize, motion, platesSection } from '../data/scene'
 import type { DishId, Mover, Piece, Window } from '../data/types'
 import { FireEffects } from './FireEffects'
 import { InfoPills } from './InfoPills'
@@ -238,6 +238,8 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
     }
   }
   let pin: ScrollTrigger | null = null
+  // phones: the food layer lives inside the pinned journey, so it can never drift from the plates
+  let foodInJourney = false
 
   // "Rest": when scrolling stops while food is only lifted (not yet flying), it eases back down
   // onto the grill on its own clock, and lifts again smoothly as soon as scrolling resumes.
@@ -253,7 +255,7 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
     if (!m.plan) return
     // after the pin ends, the scene scrolls away: follow it while the scrub catches up
     let journeyTop = 0
-    if (pin && p.flight >= 1) {
+    if (pin && p.flight >= 1 && !foodInJourney) {
       const scrolled = getLenis()?.animatedScroll ?? window.scrollY
       journeyTop = -Math.max(0, scrolled - pin.end)
     }
@@ -292,11 +294,18 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
     }
 
     journey.dataset.mode = overlay.dataset.mode = headerLayer.dataset.mode = 'cinematic'
+    const home = overlay.parentElement
+    const homeNext = overlay.nextSibling
+    if (!isDesktop && home) {
+      journey.appendChild(overlay)
+      foodInJourney = true
+    }
     const length = isDesktop ? motion.scrollLength.desktop : motion.scrollLength.mobile
     const end = () => `+=${window.innerHeight * length}`
     // Every timeline follows the pin's own scroll range (function-based, recomputed on refresh).
     const trigger = (extra: ScrollTrigger.Vars = {}): ScrollTrigger.Vars => ({
-      trigger: journey, start: () => pin?.start ?? 0, end: () => pin?.end ?? 0, scrub: motion.scrub, invalidateOnRefresh: true, ...extra,
+      // phones scroll natively (no Lenis): follow the finger exactly, so the food never lags behind the plates
+      trigger: journey, start: () => pin?.start ?? 0, end: () => pin?.end ?? 0, scrub: isDesktop ? motion.scrub : true, invalidateOnRefresh: true, ...extra,
     })
 
     ScrollTrigger.addEventListener('refreshInit', measure)
@@ -347,6 +356,7 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
         const t = gsap.timeline({ scrollTrigger: trigger({ onRefresh: draw }), onUpdate: draw })
         at(t, cam, { v: 1, ease: motion.eases.flight }, tl.flight)
         seal(t)
+        // the food layer sits inside the journey on phones, so after the pin it scrolls away with the grill
         draw()
         return
       }
@@ -427,6 +437,10 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
       rest.v = 0
       document.removeEventListener('click', onClick)
       pin = null
+      if (foodInJourney && home) {
+        home.insertBefore(overlay, homeNext)
+        foodInJourney = false
+      }
       delete journey.dataset.mode
     }
   })
@@ -463,15 +477,6 @@ export function GrillToPlateScene({ model }: { model: SceneModel }) {
             <div className="plates__grid plates__grid--live">
               {dishes.map((d) => <PlateCard key={d.id} model={model} dish={{ ...d, plate: d.id }} />)}
             </div>
-            {/* phones: the extra row fits in the same screen as the first one */}
-            {moreDishes.length > 0 && (
-              <div className="plates__grid plates__grid--more-inline">
-                {/* phones: the half chicken stays on the grill and opens the second row, already plated */}
-                {[{ ...dishes.find((d) => d.id === 'chicken')!, id: 'chicken-m', plate: 'chicken' as DishId }, ...moreDishes.map((d) => ({ ...d, id: `${d.id}-m` }))]
-                  .map((d) => <PlateCard key={d.id} model={model} dish={d} live={false} />)}
-              </div>
-            )}
-            <div className="plates__cta plates__cta--inline"><a className="order-button" href="#menu">View full menu</a></div>
           </section>
         </div>
       </div>
