@@ -69,7 +69,7 @@ export function PlateCard({ model, dish, live = true }: { model: SceneModel; dis
   const w = 1100
   const h = Math.round(w / plate.aspect)
   return (
-    <article className="plate-card flex min-w-0 flex-col items-center text-center" aria-labelledby={`dish-${dish.id}`}>
+    <article className="plate-card flex min-w-0 flex-col items-center text-center" data-dish={dish.plate} aria-labelledby={`dish-${dish.id}`}>
       <div className="plate-card__plate" {...a('plate')} style={{ aspectRatio: `${plate.aspect}` }}>
         <div className="plate-card__hover">
         <div className={`absolute inset-0 ${live ? 'will-change-transform' : ''}`} {...a('plate-visual')}>
@@ -325,13 +325,31 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
     for (const l of lids) {
       const t = gsap.timeline({ scrollTrigger: trigger() })
       t.fromTo(l.el, { y: () => l.slot.top + l.slot.h / 2 }, { y: () => l.slot.top + l.slot.h / 2 - travel, ease: motion.eases.flight, duration: tl.flight[1] - tl.flight[0] }, tl.flight[0])
-      t.fromTo(l.hinge, { rotationX: 0 }, { rotationX: motion.lidAngle, ease: 'power2.inOut', duration: tl.open[1] - tl.open[0] }, tl.open[0])
-      t.fromTo(l.el, { zIndex: 2 }, { zIndex: 0, duration: 0, immediateRender: false }, timeAtEase('power2.inOut', 0.45, tl.open))
+      if (isDesktop) {
+        t.fromTo(l.hinge, { rotationX: 0 }, { rotationX: motion.lidAngle, ease: 'power2.inOut', duration: tl.open[1] - tl.open[0] }, tl.open[0])
+        t.fromTo(l.el, { zIndex: 2 }, { zIndex: 0, duration: 0, immediateRender: false }, timeAtEase('power2.inOut', 0.45, tl.open))
+      } else {
+        gsap.set(l.el, { zIndex: 2 }) // phones: the half chicken stays in its closed basket
+      }
       seal(t)
     }
 
     // One timeline per travelling food item.
     movers.forEach((m, index) => {
+      // phones: the half chicken stays on the grill and just rides up with the camera
+      if (!isDesktop && m.mover.dish === 'chicken') {
+        const cam = { v: 0 }
+        const draw = () => {
+          if (!m.plan) return
+          const pose = poseAt(startProgress(), m.slot, m.plan, motion, vp, -cam.v * travel)
+          m.set.x(pose.x); m.set.y(pose.y); m.set.rotation(pose.rotation); m.set.scaleX(pose.scale); m.set.scaleY(pose.scale)
+        }
+        const t = gsap.timeline({ scrollTrigger: trigger({ onRefresh: draw }), onUpdate: draw })
+        at(t, cam, { v: 1, ease: motion.eases.flight }, tl.flight)
+        seal(t)
+        draw()
+        return
+      }
       const p = startProgress()
       progressOf.set(m, p)
       const t = gsap.timeline({
@@ -442,13 +460,15 @@ export function GrillToPlateScene({ model }: { model: SceneModel }) {
           <Hero />
           <section className="plates" id="menu" aria-labelledby="plates-title">
             <h2 id="plates-title" className="visually-hidden">{platesSection.title}</h2>
-            <div className="plates__grid">
+            <div className="plates__grid plates__grid--live">
               {dishes.map((d) => <PlateCard key={d.id} model={model} dish={{ ...d, plate: d.id }} />)}
             </div>
             {/* phones: the extra row fits in the same screen as the first one */}
             {moreDishes.length > 0 && (
               <div className="plates__grid plates__grid--more-inline">
-                {moreDishes.map((d) => <PlateCard key={d.id} model={model} dish={{ ...d, id: `${d.id}-m` }} live={false} />)}
+                {/* phones: the half chicken stays on the grill and opens the second row, already plated */}
+                {[{ ...dishes.find((d) => d.id === 'chicken')!, id: 'chicken-m', plate: 'chicken' as DishId }, ...moreDishes.map((d) => ({ ...d, id: `${d.id}-m` }))]
+                  .map((d) => <PlateCard key={d.id} model={model} dish={d} live={false} />)}
               </div>
             )}
             <div className="plates__cta plates__cta--inline"><a className="order-button" href="#menu">View full menu</a></div>
