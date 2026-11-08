@@ -29,6 +29,10 @@ function Hero() {
   return (
     <section className="hero" id="top" aria-labelledby="hero-title">
       <div className="absolute inset-0">
+        {/* phones: the smoky back wall of the grill photo, stretched up to the header */}
+        <div className="grill-backdrop" aria-hidden="true" style={{ backgroundImage: `url(${assets.grill})` }}>
+          <img src={assets.smoke} alt="" draggable={false} decoding="async" />
+        </div>
         <div className="grill-stage">
           <img className="grill-stage__image" src={assets.grill} alt="" width={imageSize.grill[0]} height={imageSize.grill[1]}
             draggable={false} decoding="async" fetchPriority="high" data-hero-image />
