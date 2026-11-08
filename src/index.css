@@ -2333,17 +2333,17 @@ html.lenis, html.lenis body { height: auto; }
 }
 
 @layer components {
-/* Phones: the grill sits right under the header (bigger), the headline right under the grill. */
+/* Phones: a bigger grill with the headline right under it; the pair is centred in the space under
+   the header, so there is little empty black, and the plates stay hidden until you scroll. */
 @media (width <= 767px) {
+  .hero { --g-w: 140vw; --g-h: calc(var(--g-w) * 0.5628 * 0.9); --g-top: max(70px, calc(70px + (100svh - 70px - var(--g-h) - 210px) / 2)); }
   .grill-stage {
-    --stage-w: 128vw;
-    top: 70px;
+    --stage-w: var(--g-w);
+    top: var(--g-top);
   }
   .hero__intro {
     bottom: auto;
-    top: calc(70px + 128vw * 0.5628 * 0.9 + 4px);
+    top: calc(var(--g-top) + var(--g-h) + 4px);
   }
-  /* the hero ends right after the headline, so the empty plates already peek in below it */
-  .hero { height: calc(70px + 128vw * 0.5628 * 0.9 + 205px); min-height: 0; }
 }
 }
