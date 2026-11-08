@@ -340,17 +340,25 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
       seal(t)
     }
 
-    // Phones: plates rise into the space under the grill while the food flies.
+    // Phones: plates rise into the space under the grill as the headline fades (no empty gap),
+    // and are in place well before the food lands.
     if (phone && platesEl) {
       const t = gsap.timeline({ scrollTrigger: trigger() })
-      at(t, platesEl, { y: () => -shift, ease: motion.eases.flight }, tl.flight)
+      at(t, platesEl, { y: () => -shift, ease: 'power2.out' }, [0.02, 0.32])
       seal(t)
     }
+
+    // The header gets a dark backdrop once content scrolls underneath it (after the scene).
+    ScrollTrigger.create({
+      start: () => (pin?.end ?? 0) - 40,
+      end: 'max',
+      toggleClass: { targets: headerLayer, className: 'is-solid' },
+    })
 
     // Headline fades as the lid opens.
     if (headline) {
       const t = gsap.timeline({ scrollTrigger: trigger() })
-      at(t, headline, { opacity: 0, ease: 'power1.out' }, tl.headline)
+      at(t, headline, { opacity: 0, ease: 'power1.out' }, phone ? [0, 0.16] : tl.headline)
       seal(t)
     }
 
