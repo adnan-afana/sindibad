@@ -193,7 +193,7 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
   const journey = scope.querySelector<HTMLElement>('[data-journey]')!
   const track = scope.querySelector<HTMLElement>('[data-track]')!
   const headline = scope.querySelector<HTMLElement>('[data-headline]')
-  let tl = motion.timeline
+  const tl = motion.timeline
 
   const movers: MoverRefs[] = Object.entries(food.movers).flatMap(([id, mover]) => {
     const el = overlay.querySelector<HTMLElement>(`[data-mover="${id}"]`)
@@ -254,7 +254,7 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
     }
   }
   let pin: ScrollTrigger | null = null
-  // phones: the food layer lives inside the pinned journey, so it can never drift from the plates
+  // the food layer lives inside the pinned journey, so it can never drift from the plates
   let foodInJourney = false
 
   // "Rest": when scrolling stops while food is only lifted (not yet flying), it eases back down
@@ -311,14 +311,9 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
 
     journey.dataset.mode = overlay.dataset.mode = headerLayer.dataset.mode = 'cinematic'
     phone = !isDesktop
-    // phones: a shorter scene with no dead scroll after landing — the finishing touches follow
-    // the landing straight away and the page releases right after the skewers slide out
-    tl = phone
-      ? { headline: [0, 0.18], open: [0, 0.1], lift: [0.03, 0.1], flight: [0.08, 0.8], settle: [0.8, 0.86], slide: [0.84, 0.94], spread: [0.86, 0.94], handoff: [0.94, 0.98] }
-      : motion.timeline
     const home = overlay.parentElement
     const homeNext = overlay.nextSibling
-    if (!isDesktop && home) {
+    if (home) {
       journey.appendChild(overlay)
       foodInJourney = true
     }
@@ -326,8 +321,8 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
     const end = () => `+=${window.innerHeight * length}`
     // Every timeline follows the pin's own scroll range (function-based, recomputed on refresh).
     const trigger = (extra: ScrollTrigger.Vars = {}): ScrollTrigger.Vars => ({
-      // phones scroll natively (no Lenis): follow the finger exactly, so the food never lags behind the plates
-      trigger: journey, start: () => pin?.start ?? 0, end: () => pin?.end ?? 0, scrub: isDesktop ? motion.scrub : true, invalidateOnRefresh: true, ...extra,
+      // follow the scroll exactly (Lenis already smooths it on desktop), so food and plates never drift apart
+      trigger: journey, start: () => pin?.start ?? 0, end: () => pin?.end ?? 0, scrub: true, invalidateOnRefresh: true, ...extra,
     })
 
     ScrollTrigger.addEventListener('refreshInit', measure)
