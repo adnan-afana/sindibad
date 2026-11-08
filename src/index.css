@@ -2331,3 +2331,19 @@ html.lenis, html.lenis body { height: auto; }
   position: absolute;
   inset: 0;
 }
+
+@layer components {
+/* Phones: the grill sits right under the header (bigger), the headline right under the grill. */
+@media (width <= 767px) {
+  .grill-stage {
+    --stage-w: 128vw;
+    top: 70px;
+  }
+  .hero__intro {
+    bottom: auto;
+    top: calc(70px + 128vw * 0.5628 * 0.9 + 4px);
+  }
+  /* the hero ends right after the headline, so the empty plates already peek in below it */
+  .hero { height: calc(70px + 128vw * 0.5628 * 0.9 + 205px); min-height: 0; }
+}
+}
