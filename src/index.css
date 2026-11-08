@@ -1528,16 +1528,12 @@ h3 {
 }
 /* Desktop/tablet: extra rows sit in their own section below the scene.
    Phones: both rows fit on one screen, so the extra row lives inside the plates section. */
-.plates__grid--more-inline {
+.plates__mobile-only {
   display: none;
 }
 @media (width <= 767px) {
-  .plates__grid--more-inline {
-    display: grid;
-    margin-top: 28px;
-  }
-  .plates--more {
-    display: none;
+  .plates__mobile-only {
+    display: contents;
   }
 }
 
@@ -2324,4 +2320,14 @@ html.lenis, html.lenis body { height: auto; }
   .plates__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 22px; }
   .plates__grid--live > [data-dish="chicken"] { display: none !important; }
 }
+}
+@media (width <= 767px) {
+  /* phones: the first row sits right under the grill and the next rows follow straight after it */
+  .plates:not(.plates--more) { min-height: 0; padding-block: 56px 22px; }
+}
+
+/* Phones: the food layer is moved inside the pinned journey (same coordinates, scrolls with it). */
+.journey > .food-layer {
+  position: absolute;
+  inset: 0;
 }
