@@ -193,7 +193,7 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
   const journey = scope.querySelector<HTMLElement>('[data-journey]')!
   const track = scope.querySelector<HTMLElement>('[data-track]')!
   const headline = scope.querySelector<HTMLElement>('[data-headline]')
-  const tl = motion.timeline
+  let tl = motion.timeline
 
   const movers: MoverRefs[] = Object.entries(food.movers).flatMap(([id, mover]) => {
     const el = overlay.querySelector<HTMLElement>(`[data-mover="${id}"]`)
@@ -311,6 +311,11 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
 
     journey.dataset.mode = overlay.dataset.mode = headerLayer.dataset.mode = 'cinematic'
     phone = !isDesktop
+    // phones: a shorter scene with no dead scroll after landing — the finishing touches follow
+    // the landing straight away and the page releases right after the skewers slide out
+    tl = phone
+      ? { headline: [0, 0.18], open: [0, 0.1], lift: [0.03, 0.1], flight: [0.08, 0.8], settle: [0.8, 0.86], slide: [0.84, 0.94], spread: [0.86, 0.94], handoff: [0.94, 0.98] }
+      : motion.timeline
     const home = overlay.parentElement
     const homeNext = overlay.nextSibling
     if (!isDesktop && home) {
@@ -344,7 +349,7 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
     // and are in place well before the food lands.
     if (phone && platesEl) {
       const t = gsap.timeline({ scrollTrigger: trigger() })
-      at(t, platesEl, { y: () => -shift, ease: 'power2.out' }, [0.02, 0.32])
+      at(t, platesEl, { y: () => -shift, ease: 'power2.out' }, [0.02, 0.36])
       seal(t)
     }
 
@@ -358,7 +363,7 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
     // Headline fades as the lid opens.
     if (headline) {
       const t = gsap.timeline({ scrollTrigger: trigger() })
-      at(t, headline, { opacity: 0, ease: 'power1.out' }, phone ? [0, 0.16] : tl.headline)
+      at(t, headline, { opacity: 0, ease: 'power1.out' }, tl.headline)
       seal(t)
     }
 
