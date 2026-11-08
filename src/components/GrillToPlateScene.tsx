@@ -220,14 +220,26 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
   // ---- measurement (on refresh only; offsetLeft/offsetTop so transforms never leak in) ----
   const vp = { w: window.innerWidth, h: window.innerHeight }
   let travel = 0 // how far the camera moves the track up, px
+  // phones: the plates also slide up under the grill (closing the gap left by the faded headline)
+  const platesEl = scope.querySelector<HTMLElement>('.plates')
+  const heroEl = scope.querySelector<HTMLElement>('.hero')
+  const stageEl = scope.querySelector<HTMLElement>('.grill-stage')
+  let shift = 0
+  let phone = false
   const measure = () => {
     vp.w = window.innerWidth
     vp.h = window.innerHeight
-    travel = Math.max(0, track.offsetHeight - vp.h)
+    shift = 0
+    if (phone && heroEl && stageEl) {
+      const grillBottom = offsetRect(stageEl, journey).top + stageEl.offsetHeight * 0.88
+      shift = Math.max(0, heroEl.offsetHeight - grillBottom)
+    }
+    travel = Math.max(0, track.offsetHeight - shift - vp.h)
     for (const m of movers) {
       m.slot = offsetRect(m.slotEl, journey)
       const plate = offsetRect(m.plateEl, journey)
-      const ends = m.endEls.map((e) => { const r = offsetRect(e, journey); return { x: r.left, y: r.top } })
+      plate.top -= shift
+      const ends = m.endEls.map((e) => { const r = offsetRect(e, journey); return { x: r.left, y: r.top - shift } })
       m.plan = planFlight(m.mover, m.pieces, m.slot, m.restRotation, plate, ends, vp, motion)
       gsap.set(m.el, { width: m.slot.w, height: m.slot.h, xPercent: -50, yPercent: -50 })
     }
@@ -294,6 +306,7 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
     }
 
     journey.dataset.mode = overlay.dataset.mode = headerLayer.dataset.mode = 'cinematic'
+    phone = !isDesktop
     const home = overlay.parentElement
     const homeNext = overlay.nextSibling
     if (!isDesktop && home) {
@@ -320,6 +333,13 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
     for (const el of [track, headerLayer]) {
       const t = gsap.timeline({ scrollTrigger: trigger() })
       at(t, el, { y: () => -travel, ease: motion.eases.flight }, tl.flight)
+      seal(t)
+    }
+
+    // Phones: plates rise into the space under the grill while the food flies.
+    if (phone && platesEl) {
+      const t = gsap.timeline({ scrollTrigger: trigger() })
+      at(t, platesEl, { y: () => -shift, ease: motion.eases.flight }, tl.flight)
       seal(t)
     }
 
@@ -437,6 +457,7 @@ function setupScene(model: SceneModel, scope: HTMLElement, foodLayer: HTMLElemen
       rest.v = 0
       document.removeEventListener('click', onClick)
       pin = null
+      phone = false
       if (foodInJourney && home) {
         home.insertBefore(overlay, homeNext)
         foodInJourney = false
