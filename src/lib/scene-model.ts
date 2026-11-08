@@ -42,3 +42,12 @@ export function landedStyle(mover: Mover, p: Piece) {
 }
 
 export { dishes, grillItems, food, grillLayout }
+
+/** Smaller copies of the heaviest photos, so phones download less (same image, resized). */
+const VARIANTS: Record<string, [string, number][]> = {
+  'assets/plates/chicken-base.webp': [['assets/plates/chicken-base-440.webp', 440], ['assets/plates/chicken-base-720.webp', 720], ['assets/plates/chicken-base.webp', 1100]],
+  'assets/plates/kebab-base.webp': [['assets/plates/kebab-base-440.webp', 440], ['assets/plates/kebab-base-720.webp', 720], ['assets/plates/kebab-base.webp', 1100]],
+  'assets/plates/tawook-base.webp': [['assets/plates/tawook-base-440.webp', 440], ['assets/plates/tawook-base-720.webp', 720], ['assets/plates/tawook-base.webp', 1100]],
+  'assets/food/chicken-piece-1.webp': [['assets/food/chicken-piece-1-360.webp', 360], ['assets/food/chicken-piece-1.webp', 720]],
+}
+export const srcSetFor = (src: string) => VARIANTS[src]?.map(([u, w]) => `${u} ${w}w`).join(', ')

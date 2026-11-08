@@ -20,3 +20,14 @@ export const FULL_MOTION = '(prefers-reduced-motion: no-preference)'
 export const prefersReducedMotion = () => window.matchMedia(REDUCED_MOTION).matches
 
 export { gsap, ScrollTrigger, SplitText, MotionPathPlugin }
+
+/** One debounced ScrollTrigger.refresh for bursts of image loads (each refresh is a full layout pass).
+ *  Skipped while the user is actively scrolling; runs once scrolling settles. */
+let refreshTimer = 0
+export function scheduleRefresh(delay = 250) {
+  clearTimeout(refreshTimer)
+  refreshTimer = window.setTimeout(() => {
+    if (ScrollTrigger.isScrolling()) return scheduleRefresh(delay)
+    ScrollTrigger.refresh()
+  }, delay)
+}
