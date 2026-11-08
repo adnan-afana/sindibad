@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "@fontsource-variable/oswald";
 @import "@fontsource-variable/inter";
-@import "@fontsource-variable/cormorant-garamond";
 
 /* Design tokens (Tailwind 4). Generates utilities such as bg-red, text-cream, font-condensed, ease-flight. */
 @theme {
@@ -18,7 +17,7 @@
 
   --font-sans: "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-condensed: "Oswald Variable", "Arial Narrow", "Roboto Condensed", sans-serif;
-  --font-serif: "Cormorant Garamond Variable", "Times New Roman", serif;
+  --font-serif: var(--font-condensed, "Oswald Variable"), sans-serif;
 
   /* CSS twins of the GSAP eases used by the scroll scene */
   --ease-lift: cubic-bezier(0.33, 1, 0.68, 1); /* power2.out */
@@ -2301,3 +2300,19 @@ html.lenis, html.lenis body { height: auto; }
 .lenis:not(.lenis-autoToggle).lenis-stopped { overflow: clip; }
 .lenis [data-lenis-prevent] { overscroll-behavior: contain; }
 .lenis.lenis-smooth iframe { pointer-events: none; }
+
+@layer components {
+/* Performance: loops pause while their section is off screen (set by App via IntersectionObserver). */
+[data-offscreen] *,
+[data-offscreen] *::before,
+[data-offscreen] *::after {
+  animation-play-state: paused !important;
+}
+/* Phones: fewer, cheaper fire particles (same look at that size). */
+@media (hover: none), (width <= 767px) {
+  .flame-tongues { filter: saturate(1.25); }
+  .flame-tongues span:nth-child(2n) { display: none; }
+  .embers span:nth-child(2n) { display: none; }
+  .grill-stage__flames--dance { display: none; }
+}
+}

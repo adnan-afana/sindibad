@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { gsap, ScrollTrigger, FULL_MOTION } from './lib/gsap'
+import { gsap, ScrollTrigger, FULL_MOTION, scheduleRefresh } from './lib/gsap'
 import { getLenis, initSmoothScroll, scrollToTarget } from './lib/smooth-scroll'
 import { loadOwnerState, loadPublished } from './lib/owner-store'
 import type { SceneModel } from './lib/scene-model'
@@ -50,7 +50,7 @@ function Site({ model }: { model: SceneModel }) {
       ScrollTrigger.refresh()
       getLenis()?.start()
     })
-    const refresh = () => ScrollTrigger.refresh()
+    const refresh = () => scheduleRefresh()
     window.addEventListener('load', refresh)
     const pending = [...document.images].filter((img) => !img.complete)
     pending.forEach((img) => img.addEventListener('load', refresh, { once: true }))
@@ -67,11 +67,19 @@ function Site({ model }: { model: SceneModel }) {
     }
     document.addEventListener('click', onClick)
 
+    // Pause CSS loops (fire, steam, sparks, coals) while their area is off screen.
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) e.target.toggleAttribute('data-offscreen', !e.isIntersecting)
+    }, { rootMargin: '120px 0px' })
+    const zones = document.querySelectorAll('.grill-stage, .plates, .voices, .club, .catering')
+    zones.forEach((z) => io.observe(z))
+
     return () => {
       cancelled = true
       window.removeEventListener('load', refresh)
       pending.forEach((img) => img.removeEventListener('load', refresh))
       document.removeEventListener('click', onClick)
+      io.disconnect()
       mm.revert()
     }
   }, [])
