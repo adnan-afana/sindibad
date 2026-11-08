@@ -2336,7 +2336,7 @@ html.lenis, html.lenis body { height: auto; }
 /* Phones: a bigger grill with the headline right under it; the pair is centred in the space under
    the header, so there is little empty black, and the plates stay hidden until you scroll. */
 @media (width <= 767px) {
-  .hero { --g-w: 140vw; --g-h: calc(var(--g-w) * 0.5628 * 0.9); --g-top: max(70px, calc(100svh - var(--g-h) - 210px - 28px)); }
+  .hero { --g-w: 140vw; --g-h: calc(var(--g-w) * 0.5628 * 0.9); --g-top: max(70px, calc(70px + (100svh - 70px - var(--g-h) - 210px) * 0.5)); }
   .grill-stage {
     --stage-w: var(--g-w);
     top: var(--g-top);
@@ -2359,7 +2359,7 @@ html.lenis, html.lenis body { height: auto; }
     left: calc(50% - var(--g-w) / 2);
     width: var(--g-w);
     /* only a short extension above the grill (less stretch), fading out gradually */
-    --ext: min(130px, var(--g-top) - 60px);
+    --ext: min(48px, var(--g-top) - 60px);
     top: calc(var(--g-top) - var(--ext));
     height: calc(var(--ext) + var(--g-w) * 0.5628 * var(--band));
     background-repeat: no-repeat;
@@ -2384,8 +2384,8 @@ html.lenis, html.lenis body { height: auto; }
   }
   /* the grill's own top edge fades into the stretched band */
   .grill-stage {
-    -webkit-mask-image: linear-gradient(transparent 0%, transparent 13%, #000 24%, #000 86%, transparent 100%);
-    mask-image: linear-gradient(transparent 0%, transparent 13%, #000 24%, #000 86%, transparent 100%);
+    -webkit-mask-image: linear-gradient(transparent 0%, transparent 6%, #000 20%, #000 86%, transparent 100%);
+    mask-image: linear-gradient(transparent 0%, transparent 6%, #000 20%, #000 86%, transparent 100%);
   }
 }
 }
