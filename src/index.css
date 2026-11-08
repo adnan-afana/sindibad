@@ -2390,3 +2390,18 @@ html.lenis, html.lenis body { height: auto; }
   }
 }
 }
+
+@layer components {
+/* Header backdrop after the scene, so the logo and buttons never sit on top of food photos. */
+.header-layer::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 -28px;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(rgba(27, 25, 22, 0.97) 0%, rgba(27, 25, 22, 0.92) 62%, rgba(27, 25, 22, 0) 100%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.header-layer.is-solid::before { opacity: 1; }
+}
