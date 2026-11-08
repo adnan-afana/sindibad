@@ -94,21 +94,23 @@ export const grillItems: GrillItem[] = [
 
 export const motion: Motion = {
   scrub: 0.6,
-  scrollLength: { desktop: 2.6, mobile: 1.6 },
+  scrollLength: { desktop: 1.6, mobile: 1.6 },
   lift: { y: -3, scale: 1.04 },
   curviness: 0.6,
   stagger: 0.008,
   lidAngle: 74,
+  // short scene, no dead scroll: the finishing touches follow the landing straight away
   timeline: {
-    headline: [0, 0.1],
+    headline: [0, 0.18],
     open: [0, 0.1],
-    lift: [0.04, 0.12],
-    flight: [0.1, 0.62],
-    settle: [0.62, 0.7],
-    slide: [0.7, 0.8],
-    spread: [0.74, 0.86],
-    handoff: [0.9, 0.94],
+    lift: [0.03, 0.1],
+    flight: [0.08, 0.8],
+    settle: [0.8, 0.86],
+    slide: [0.84, 0.94],
+    spread: [0.86, 0.94],
+    handoff: [0.94, 0.98],
   },
+
   eases: {
     lift: 'power2.out',
     flight: 'power1.inOut',
