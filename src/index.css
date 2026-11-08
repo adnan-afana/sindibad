@@ -2336,7 +2336,7 @@ html.lenis, html.lenis body { height: auto; }
 /* Phones: a bigger grill with the headline right under it; the pair is centred in the space under
    the header, so there is little empty black, and the plates stay hidden until you scroll. */
 @media (width <= 767px) {
-  .hero { --g-w: 140vw; --g-h: calc(var(--g-w) * 0.5628 * 0.9); --g-top: max(70px, calc(70px + (100svh - 70px - var(--g-h) - 210px) / 2)); }
+  .hero { --g-w: 140vw; --g-h: calc(var(--g-w) * 0.5628 * 0.9); --g-top: max(70px, calc(100svh - var(--g-h) - 210px - 28px)); }
   .grill-stage {
     --stage-w: var(--g-w);
     top: var(--g-top);
@@ -2344,6 +2344,46 @@ html.lenis, html.lenis body { height: auto; }
   .hero__intro {
     bottom: auto;
     top: calc(var(--g-top) + var(--g-h) + 4px);
+  }
+}
+}
+
+@layer components {
+.grill-backdrop { display: none; }
+@media (width <= 767px) {
+  /* the photo's smoky band (top 24%) is stretched from the top of the screen down to the grill rim */
+  .grill-backdrop {
+    --band: 0.24;
+    display: block;
+    position: absolute;
+    left: calc(50% - var(--g-w) / 2);
+    width: var(--g-w);
+    top: 0;
+    height: calc(var(--g-top) + var(--g-w) * 0.5628 * var(--band));
+    background-repeat: no-repeat;
+    background-position: 50% 0;
+    background-size: 100% calc(100% / var(--band));
+    filter: brightness(0.74) saturate(0.95);
+    -webkit-mask-image: linear-gradient(transparent 0%, #000 55%);
+    mask-image: linear-gradient(transparent 0%, #000 55%);
+    pointer-events: none;
+  }
+  .grill-backdrop img {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 70%;
+    max-width: none;
+    opacity: 0.6;
+    mix-blend-mode: plus-lighter;
+    transform-origin: 50% 100%;
+    animation: smoke-drift 9s linear infinite;
+  }
+  /* the grill's own top edge fades into the stretched band */
+  .grill-stage {
+    -webkit-mask-image: linear-gradient(transparent 0%, transparent 13%, #000 24%, #000 86%, transparent 100%);
+    mask-image: linear-gradient(transparent 0%, transparent 13%, #000 24%, #000 86%, transparent 100%);
   }
 }
 }
