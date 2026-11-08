@@ -6,7 +6,7 @@ import { offsetRect, type Rect } from '../lib/measure'
 import { metalFadeEase, planFlight, poseAt, startProgress, type Plan, type Progress } from '../lib/journey-math'
 import {
   baseTransform, dishes, food, foodTransform, grillItems, grillLayout, landedStyle, moversFor,
-  pieceStyle, plateBase, scenePieces, slotStyle, type SceneModel,
+  pieceStyle, plateBase, scenePieces, slotStyle, srcSetFor, type SceneModel,
 } from '../lib/scene-model'
 import { assets, hero, imageSize, moreDishes, motion, platesSection } from '../data/scene'
 import type { DishId, Mover, Piece, Window } from '../data/types'
@@ -20,7 +20,7 @@ import { SiteHeader } from './SiteHeader'
 
 function FoodImage({ model, mover, piece, eager }: { model: SceneModel; mover: Mover; piece: Piece; eager?: boolean }) {
   return (
-    <img src={piece.src} alt="" draggable={false} decoding="async" loading={eager ? 'eager' : 'lazy'}
+    <img src={piece.src} srcSet={srcSetFor(piece.src)} sizes="(max-width: 767px) 30vw, 22vw" alt="" draggable={false} decoding="async" loading={eager ? 'eager' : 'lazy'}
       style={{ transform: foodTransform(model, mover.dish) }} />
   )
 }
@@ -73,7 +73,7 @@ export function PlateCard({ model, dish, live = true }: { model: SceneModel; dis
       <div className="plate-card__plate" {...a('plate')} style={{ aspectRatio: `${plate.aspect}` }}>
         <div className="plate-card__hover">
         <div className={`absolute inset-0 ${live ? 'will-change-transform' : ''}`} {...a('plate-visual')}>
-          <img className="absolute inset-0 size-full object-contain" src={plateBase(model, dish.plate)} alt="" width={w} height={h} draggable={false} decoding="async"
+          <img className="absolute inset-0 size-full object-contain" src={plateBase(model, dish.plate)} srcSet={srcSetFor(plateBase(model, dish.plate))} sizes="(max-width: 767px) 33vw, 30vw" alt="" width={w} height={h} draggable={false} decoding="async"
             loading={live ? 'eager' : 'lazy'} style={{ transform: baseTransform(model, dish.plate) }} />
           <div className={`absolute inset-0 ${live ? 'opacity-0' : ''}`} {...a('landed')}>
             {moversFor(dish.plate).map(([id, mover]) =>

@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef } from 'react'
-import { gsap, ScrollTrigger, SplitText, REDUCED_MOTION } from '../lib/gsap'
+import { gsap, ScrollTrigger, SplitText, REDUCED_MOTION, scheduleRefresh } from '../lib/gsap'
 import { assets, halal } from '../data/scene'
 import { catering, contact, loyalty, testimonials } from '../data/sections'
 import { hoursSummary } from '../lib/opening-hours'
@@ -223,8 +223,7 @@ export function useSectionMotion(scope: React.RefObject<HTMLElement | null>) {
         })
       })
     }, root)
-    const onLoad = () => ScrollTrigger.refresh()
-    root.querySelectorAll('img').forEach((img) => img.addEventListener('load', onLoad, { once: true }))
+    root.querySelectorAll('img').forEach((img) => { if (!img.complete) img.addEventListener('load', () => scheduleRefresh(), { once: true }) })
     return () => {
       mm?.revert()
       ctx.revert()
