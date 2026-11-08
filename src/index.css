@@ -2343,7 +2343,8 @@ html.lenis, html.lenis body { height: auto; }
   }
   .hero__intro {
     bottom: auto;
-    top: calc(var(--g-top) + var(--g-h) + 4px);
+    /* pushed down by half of the free space under it (max 70px) */
+    top: calc(var(--g-top) + var(--g-h) + 4px + clamp(0px, (100svh - var(--g-top) - var(--g-h) - 214px) * 0.5, 70px));
   }
 }
 }
