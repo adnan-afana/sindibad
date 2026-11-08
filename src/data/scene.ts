@@ -94,7 +94,7 @@ export const grillItems: GrillItem[] = [
 
 export const motion: Motion = {
   scrub: 0.6,
-  scrollLength: { desktop: 2.6, mobile: 2.8 },
+  scrollLength: { desktop: 2.6, mobile: 1.6 },
   lift: { y: -3, scale: 1.04 },
   curviness: 0.6,
   stagger: 0.008,
